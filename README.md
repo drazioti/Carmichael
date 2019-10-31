@@ -28,6 +28,10 @@ git clone https://github.com/drazioti/Carmichael.git
 Contribute by using git pull to this repo. 
 
 ## TODO
-Add python code
-Add c/c++ code
-Add c/c++/openmp  code for the parallel attack
+- Add hash-trick to sagemath code
+
+- Add python code
+
+- Add c/c++ code
+
+- Add c/c++/openmp  code for the parallel attack
