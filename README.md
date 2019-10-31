@@ -4,6 +4,7 @@
 
 [GPLv2]: https://img.shields.io/badge/license-GPLv2-lightgrey.svg
 
+Applications of MSPP to cryptography see https://github.com/drazioti/NSK-birthday-attack
 
 ## The code
 We provide Sagemath code, which we used to build the tables.
