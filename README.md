@@ -1,4 +1,4 @@
-#  Multiplicative Subset Product Problem (MSPP)
+#  Modular Subset Product Problem (MSPP)
 
 ![GPLv2][]
 
