@@ -1,6 +1,7 @@
 #  Multiplicative Product Subset Problem
 
-
+![GPLv2][]
+[GPLv2]: https://img.shields.io/badge/license-GPLv2-lightgrey.svg
 
 ## Tables for Carmichael Numbers
 We provide tables for Carmichael numbers.
