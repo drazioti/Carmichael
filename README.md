@@ -30,6 +30,8 @@ First fork this repository. Make the changes you want (e.g. update some tables, 
 Contribute by using git pull to this repo. 
 
 ## TODO
+- ~~Add sagemath code~~
+
 - Add hash-trick to sagemath code
 
 - Add python code
