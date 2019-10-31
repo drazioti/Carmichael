@@ -25,6 +25,8 @@ git clone https://github.com/drazioti/Carmichael.git
 ```
 
 ## Contribute
+First fork this repository. Make the changes you want (e.g. update some tables, correct a bug to the code etc)
+
 Contribute by using git pull to this repo. 
 
 ## TODO
