@@ -1,4 +1,8 @@
-# Carmichael
+![build status][]
+![python][]
+![GPLv2][]
+
+** Tables for Carmichael numbers **
 We provide tables for Carmichael numbers.
 
 For instance,
