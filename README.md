@@ -13,9 +13,9 @@ We provide tables for Carmichael numbers.
 
 For instance,
 
-5-80.txt contains Carmichael numbers with 5 to 80 prime factors.
+*5-80.txt* contains Carmichael numbers with 5 to 80 prime factors.
 
-2542.txt contains a Carmichael number with 2542 prime factors.
+*2542.txt* contains a Carmichael number with 2542 prime factors.
 
 ## Get the tables
 You can download the source code with the tables by
@@ -24,7 +24,10 @@ You can download the source code with the tables by
 git clone https://github.com/drazioti/Carmichael.git
 ```
 
-
 ## Contribute
 Contribute by using git pull to this repo. 
 
+## TODO
+Add python code
+Add c/c++ code
+Add c/c++/openmp  code for the parallel attack
