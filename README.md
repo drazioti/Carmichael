@@ -23,7 +23,7 @@ For instance,
 *2542.txt* contains a Carmichael number with 2542 prime factors.
 
 ## Get the tables
-You can download the source code with the tables by
+You can download the source code with the tables by using
 
 ```sh
 git clone https://github.com/drazioti/Carmichael.git
