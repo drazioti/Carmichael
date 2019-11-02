@@ -150,47 +150,52 @@ def gen_I(n,b,flag):
     
     import hashlib
     import random
+    import math
     # We shall need the following code for the case 2b << n
     # see https://stackoverflow.com/questions/58674305/memory-efficient-version-for-the-construction-disjoint-random-lists
     def rand_sample(k,n):
-        #picks k distinct random integers from range(n)
-        #assumes that k is much smaller than n
+    #picks k distinct random integers from range(n)
+    #assumes that k is much smaller than n
         choices = set()
         sample = []
-        for i in xrange(k): #xrange(k) in Python 2
-            choice = random.randint(0,n)
+        for i in range(k): 
+            choice = random.randint(0,n-1)
             while choice in choices:
-                choice = random.randint(0,n)
+                choice = random.randint(0,n-1)
             choices.add(choice)
             sample.append(choice)
         return sample
-    
     L = []
     I2 = []
     I1 = []
     sample = []
-    bound = floor(b)
+    bound =int(b)
     # Here is the case when 2b is close to n
-    if abs(2*b-n)<sqrt(n):            
+    if 2*b>math.sqrt(n):      
         if b >= n:
-            print "bound must be smaller than ",b1-a1
+            print "bound must be smaller than ",math.floor(n/2)
             return
         if flag not in [0,1]:
             print "flag is either 0 or 1"
             return         
         if flag==0: # when you choose flag=0 then bound = n/2. The function ignores the parameter b.
+            #hash = hashlib.md5(os.urandom(2*n)).digest()
+            #random.seed(hash)
             L = random.sample(range(0,n+1), n+1)
-            I1 = L[0:bound]
-            I2 = L[bound:len(L)]        
+            I1 = L[:bound]
+            I2 = L[bound:]        
         if flag==1:
+            #hash = hashlib.md5(os.urandom(2*n)).digest()
+            #random.seed(hash)
             L = random.sample(range(0,n+1), 2*bound)
             I1 = L[0:bound]
             I2 = L[bound:2*bound]
         return I1,I2
-    # Here is the case when 2b < sqrt(n)
+    # Here is the case when 2b << n
     else:
         sample = rand_sample(2*b,n)
-        return sample[:b],sample[b:]
+        return sample[:b],sample[b:]            
+
         
 def product_subset_attack_first_phase(P,Lambda,c,I1,I2,local_hamming_weight):
     '''
