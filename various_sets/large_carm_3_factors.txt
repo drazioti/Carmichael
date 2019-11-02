@@ -1,5 +1,6 @@
 "Large" Carmichael numbers with three prime factors
 ===================================================
+related sequence : http://oeis.org/A087788
 
 bits: the list of prime factors
 -------------------------------
