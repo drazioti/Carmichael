@@ -4,7 +4,7 @@
 
 [GPLv2]: https://img.shields.io/badge/license-GPLv2-lightgrey.svg
 
-In this repository we provide code for solving Modular Subset Product Problem.
+In this repository we provide some code for solving Modular Subset Product Problem.
 
 We apply this problem to find Carmichael numbers by usinng Erdos algorithm (which uses MSPP).
 
