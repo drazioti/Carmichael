@@ -141,36 +141,57 @@ def perms_list(n,hamming,flag):
         s = s[0]
         return [[int(s[j][i]) for i in range(n)] for j in range(len(s))]
 
+
 def gen_I(n,b,flag):
-    ''' this function return two disjoint subsets of {0,1,2,...,n} with b elements'''
+    ''' this function return two disjoint subsets of {0,1,2,...,n} with b elements.
+    We consider two cases. One when 2b is close to n, where we do not have a memorey efficient 
+    way to generate I1,I2. If 2b<<n, then we can construct I1,I2 with memory O(1).   
+    '''
     
-    import hashlib,random
-    a1 = 0
-    b1 = n
+    import hashlib
+    import random
+    # We shall need the following code for the case 2b << n
+    # see https://stackoverflow.com/questions/58674305/memory-efficient-version-for-the-construction-disjoint-random-lists
+    def rand_sample(k,n):
+        #picks k distinct random integers from range(n)
+        #assumes that k is much smaller than n
+        choices = set()
+        sample = []
+        for i in xrange(k): #xrange(k) in Python 2
+            choice = random.randint(0,n)
+            while choice in choices:
+                choice = random.randint(0,n)
+            choices.add(choice)
+            sample.append(choice)
+        return sample
+    
     L = []
     I2 = []
     I1 = []
+    sample = []
     bound = floor(b)
-    if b >= b1 - a1:
-        print "bound must be smaller than ",b1-a1
-        return
-    if flag not in [0,1]:
-        print "flag is either 0 or 1"
-        return         
-    if flag==0: # when you choose flag=0 then bound = n/2. The function ignores the parameter b.
-        #hash = hashlib.md5(os.urandom(2*n)).digest()
-        #random.seed(hash)
-        L = random.sample(range(a1,b1), n)
-        I1 = L[0:bound]
-        I2 = L[bound:len(L)]        
-    if flag==1:
-        #hash = hashlib.md5(os.urandom(2*n)).digest()
-        #random.seed(hash)
-        L = random.sample(range(a1,b1), 2*bound)
-        I1 = L[0:bound]
-        I2 = L[bound:2*bound]
-    return I1,I2
-
+    # Here is the case when 2b is close to n
+    if abs(2*b-n)<sqrt(n):            
+        if b >= n:
+            print "bound must be smaller than ",b1-a1
+            return
+        if flag not in [0,1]:
+            print "flag is either 0 or 1"
+            return         
+        if flag==0: # when you choose flag=0 then bound = n/2. The function ignores the parameter b.
+            L = random.sample(range(0,n+1), n+1)
+            I1 = L[0:bound]
+            I2 = L[bound:len(L)]        
+        if flag==1:
+            L = random.sample(range(0,n+1), 2*bound)
+            I1 = L[0:bound]
+            I2 = L[bound:2*bound]
+        return I1,I2
+    # Here is the case when 2b < sqrt(n)
+    else:
+        sample = rand_sample(2*b,n)
+        return sample[:b],sample[b:]
+        
 def product_subset_attack_first_phase(P,Lambda,c,I1,I2,local_hamming_weight):
     '''
     Input :
