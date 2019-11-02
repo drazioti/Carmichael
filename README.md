@@ -4,7 +4,7 @@
 
 [GPLv2]: https://img.shields.io/badge/license-GPLv2-lightgrey.svg
 
-In this repository we provide code for solving Modular Subset Product Problem.
+In this repository we provide some code for solving Modular Subset Product Problem.
 
 We apply this problem to find Carmichael numbers by usinng Erdos algorithm (which uses MSPP).
 
@@ -23,7 +23,7 @@ For instance,
 *2542.txt* contains a Carmichael number with 2542 prime factors.
 
 ## Get the tables
-You can download the source code with the tables by
+You can download the source code with the tables by using
 
 ```sh
 git clone https://github.com/drazioti/Carmichael.git
