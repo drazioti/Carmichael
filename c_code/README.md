@@ -12,11 +12,13 @@ Applications of MSPP to cryptography see https://github.com/drazioti/NSK-birthda
 
 ## Requirements
 Linux
+
 GMP
 
 ## Compile
+```
 g++ carmi1.cpp Combinations3.cpp -lgmpxx -lgmp
-
+```
 ## Contribute
 First fork this repository. Make the changes you want (e.g. update some tables, correct a bug to the code etc)
 
