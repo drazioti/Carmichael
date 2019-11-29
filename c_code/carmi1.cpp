@@ -371,7 +371,7 @@ int main(){
 	clock_t startP, endP;
 	mpz_class L=1;
 	
-	int r=12;		//number of first primes
+	int r=9;		//number of first primes
 	int* Q;
 	Q = new int[r];
 	int H[r];
@@ -434,7 +434,7 @@ int main(){
 //GENERATING I set
 	
 	mpz_class n=list_size;
-	mpz_class b = 30;
+	mpz_class b = 28;
 	int found = 0;				//FOR TESTING WE WILL CHOOSE
 	clock_t begin = clock();
 	
@@ -472,7 +472,7 @@ int main(){
 		mpz_class h1;
         	mpz_class h2;
         	mpz_class temp;
-		mpz_class local_hamming_weight = 8;
+		mpz_class local_hamming_weight = 18;
         	mpz_class mod=2;
         	mpz_mod(temp.get_mpz_t(),local_hamming_weight.get_mpz_t(), mod.get_mpz_t());
         	if(temp==1){
