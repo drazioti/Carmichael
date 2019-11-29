@@ -281,12 +281,12 @@ int product_attack_1(mpz_class* &P, mpz_class &Lambda, mpz_class &c, mpz_class**
 	comb_size(sizeI, h2, sizeE2);
 	int** E1;
         E1 = new int*[mpz_get_ui(sizeE1.get_mpz_t())];
-        for (mpz_class i=0;i<sizeE1;i++)
-                E1[mpz_get_ui(i.get_mpz_t())] = new int[h1]; //MAKE ARRAY OF INDEXES OF COLUMN SIZE = comb_size
+        for (int i=0;i<sizeE1;i++)
+                E1[i] = new int[h1]; //MAKE ARRAY OF INDEXES OF COLUMN SIZE = comb_size
 	int** E2;				             //AND ROW SIZE = H1 OR H2
         E2 = new int*[mpz_get_ui(sizeE2.get_mpz_t())];
-        for (mpz_class i=0;i<sizeE2;i++)
-                E2[mpz_get_ui(i.get_mpz_t())] = new int[h2]; //
+        for (int i=0;i<sizeE2;i++)
+                E2[i] = new int[h2]; //
 	cout << "DEBUG BEFORE PERMS" << endl;
         //-----------COMBINATIONS-------------------//
 	//for E1
@@ -340,13 +340,9 @@ int product_attack_1(mpz_class* &P, mpz_class &Lambda, mpz_class &c, mpz_class**
 //TESTING THE INSTERSECTION
 	intersection(P, I[1], E2, Lambda, c, sizeE2, sizeI, U, count,sol1,sol2,h2);	
 	cout << endl;
-	for (mpz_class i=0;i<sizeE1;i++)
-                delete[] E1[mpz_get_ui(i.get_mpz_t())];
-	for (mpz_class i=0;i<sizeE2;i++)
-                delete[] E2[mpz_get_ui(i.get_mpz_t())];
         delete[] E1;
 	delete[] E2;
-	cout <<"Deleted E1,E2 try to delete c_obj"<<endl;
+	//cout <<"Deleted E1,E2 try to delete c_obj"<<endl;
 	delete c_obj1;
 	delete c_obj2;
 	U.clear();
