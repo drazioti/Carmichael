@@ -413,6 +413,7 @@ int main(){
 //GENERATING I set
 	
 	mpz_class n=list_size;
+
 	int found = 0;				//FOR TESTING WE WILL CHOOSE
 	clock_t begin = clock();
 	
@@ -447,10 +448,12 @@ int main(){
 //ARE INDEED CARMICHAEL
 
 //!!!!!BAD IMPLEMENTATION NEED CHANGE FOR H1,H2!!!!!!!!
+    
 		int h1;
-        	int h2;
+    int h2;
 		int local_hamming_weight = 8;
         	if(local_hamming_weight%2==1){
+
                 	h1 = local_hamming_weight/2;
                 	h2 = h1+1;
         	}
