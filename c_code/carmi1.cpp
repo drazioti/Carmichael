@@ -185,8 +185,10 @@ int T_set(mpz_class* &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mp
 	}
 	mpz_class hamming =8;
 	mpz_class count=0;
-	std::list<int*> sol1;
-	std::list<int*> sol2;
+	list<int> *sol1;
+	list<int> *sol2;
+	sol1 = new list<int>;
+	sol2 = new list<int>;
 	product_attack_1(P, Lambda, b, I, local_hamming_weight,sizeI, sol1, sol2, count);
 	
 	cout << "T set product attack finished " << endl;	
@@ -201,33 +203,33 @@ int T_set(mpz_class* &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mp
                 h1 = local_hamming_weight/2;
                 h2=h1;
         }
-
-	std::list<int*>::iterator it1 = sol1.begin();
-	std::list<int*>::iterator it2 = sol2.begin();	
-	for(;it1!=sol1.end() && it2!=sol2.end(); ++it1, ++it2){
+	
+	std::list<int>::iterator it1 = sol1->begin();
+	std::list<int>::iterator it2 = sol2->begin();	
+	if (it1!=sol1->end() && it2!=sol2->end()){
 		mpz_class number=1;
 		int del_size = h1 + h2;
 		mpz_class* del_set;
 		del_set = new mpz_class[h1+ h2];
 		
 		mpz_class* factors;
-                factors = new mpz_class[mpz_get_ui(sizeP.get_mpz_t()) - del_size];
-
-		for (int i=0;i<h1;i++){
-			int index = *(*it1+i);
+		factors = new mpz_class[mpz_get_ui(sizeP.get_mpz_t()) - del_size];
+		for (int i=0;i<h1; ++i , ++it1)
+		{	
+			int index = *it1;
 			del_set[i] = I[0][index];
-		}
-		for (int i=0;i<h2;i++){
-			int index = *(*it2+i);
+		}	
+		for (int i=0;i<h2; ++i, ++it2)
+		{
+			int index = *it2;
 			del_set[i+h1] = I[1][index];
 		}
-
 		cout << "Del set made " << endl;
 		std::sort(del_set, del_set + del_size);
-		//cout << "Del set is: ";
-	        //for (int i=0;i<h1+h2;i++)
-        	//        cout << del_set[i] << ' ';
-       		// cout << endl;
+		cout << "Del set is: ";
+		for (int i=0;i<h1+h2;i++)
+                	cout << del_set[i] << ' ';
+       	 	cout << endl;
 		int j=0;
 		mpz_class f_count=0;
 		for (mpz_class i=0;i<sizeP;i++){
@@ -239,7 +241,7 @@ int T_set(mpz_class* &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mp
 			else
 				++j;
 		}
-		cout << "sol set has " << sol1.size() << " elements" << endl;
+		cout << "sol set has " << sol1->size() << " elements" << endl;
 		if(is_carmichael(number, factors, f_count) == 1)
 		{	
 			//count++;
@@ -252,16 +254,18 @@ int T_set(mpz_class* &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mp
 			myfile << "Factors: ";
 			for (int i=0;i<f_count;i++)
 				myfile << factors[i] << " ";
+			delete[] del_set;
+			delete[] factors;
 			return 1;
 		}
-		//cout << "P size is : " << sizeP << endl;
-		//cout << "hamming is : " << local_hamming_weight  << endl;
-		delete[] del_set;
-		delete[] factors;	
 	}
+	//cout << "P size is : " << sizeP << endl;
+	//cout << "hamming is : " << local_hamming_weight  << endl;
 	cout << "Found " << count << " carmichael numbers with " << sizeP - local_hamming_weight << " factors" << endl;
-	sol1.clear();
-	sol2.clear();
+	sol1->clear();
+	sol2->clear();
+	delete sol1;
+	delete sol2;
 	return 0;
 }	
 
@@ -349,20 +353,20 @@ int main(){
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN-------//	
-	int r=11;		//number of first primes
-	int hamming =12;		
-	mpz_class b = 30;
+	int r=10;		//number of first primes
+	int hamming = 10;		
+	mpz_class b = 50;
 	
 	int H[r];
 	//INITIALIZING H TO ONES FOR SIMPLICITY
 	for (int i=0;i<r;i++){
 		H[i] =1;
 	}
-	H[0]=5;
-	H[1]=3;
+	H[0]=7;
+	H[1]=4;
 	H[2]=3;
-	H[3]=2;
-	H[4]=1;
+	H[3]=3;
+	H[4]=2;
 	//H[5]=7;
 	//H[6]=5;
 	//H[7]=5;
@@ -413,9 +417,9 @@ int main(){
 	clock_t begin = clock();
 	
 //START THE TEST
-
+	int iteration =0;
 	while(found==0){
-//	for(int ite=0;ite<100;ite++){ 
+//	for(int ite=0;ite<200;ite++){ 
 		
 		
 		mpz_class** I;			
@@ -466,9 +470,12 @@ int main(){
 		delete[] I[1];
 		delete[] I;
 		cout << "P size is : " << P.size() << endl;
-		if (found==1)
-			break;
-//	}
+//		if (found==1)
+//			break;
+		++iteration;
+		cout << "Run " << iteration << " times" << endl;	
+//	}	
+//
 }
 	clock_t end = clock();
 	cout << "Time elapsed: " << double(end - begin)/CLOCKS_PER_SEC << endl;
