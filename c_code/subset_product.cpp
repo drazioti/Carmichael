@@ -124,6 +124,15 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, mp
 
 //FUNCTION (6): FUNCTIONS FOR U1
 
+void get_P_element(int** &Exp, int* &Q,int r, int index, mpz_class &P_el)
+{	
+	P_el =1;
+	for(int i=0;i<r;i++)
+	{
+		P_el *= pow(Q[i], Exp[index][i]); 
+	}
+}
+
 void U1(mpz_class* &P, mpz_class* &I, int** E, mpz_class &Lambda,mpz_class &sizeE,mpz_class &sizeI,int h1, unordered_map<string, int*> &Map){
 
 	mpz_class* Q;
@@ -145,24 +154,25 @@ void U1(mpz_class* &P, mpz_class* &I, int** E, mpz_class &Lambda,mpz_class &size
 }
 //FUNCTION (7): FUNCTION FOR SAVING SUBSET AFTER FINDING INTERSECTION
 
-void sol(std::list<int*> &sol1, std::list<int*> &sol2, int* E1, int* E2)
+void sol(std::list<int>* &sol1, std::list<int>* &sol2, int* E1, int* E2, int h1, int h2)
 {
-	//cout << "Entered SOL FUCNTION" << endl;
-	sol1.push_back(E1);
-	sol2.push_back(E2);
+	cout << "Entered SOL FUCNTION" << endl;
+	for (int i=0;i<h1;i++)
+		sol1->push_back(E1[i]);
+	for (int i=0;i<h2;i++)
+		sol2->push_back(E2[i]);
+	cout << "After pushing the sol" << endl;
 }
 
 //FUNCTION (8): INTERSECTION FUNCTIONS aka HASHMAP SEARCH
 
-void intersection(mpz_class* &P, mpz_class* &I, int ** E, mpz_class &Lambda, mpz_class &c, mpz_class &sizeE, mpz_class &sizeI, unordered_map <string, int*> &Map, mpz_class &count, std::list<int*> &sol1, std::list<int*> &sol2, int h2){
+void intersection(mpz_class* &P, mpz_class* &I, int ** E, mpz_class &Lambda, mpz_class &c, mpz_class &sizeE, mpz_class &sizeI, unordered_map <string, int*> &Map, mpz_class &count, std::list<int>* &sol1, std::list<int>* &sol2,int h1, int h2){
 	mpz_class* Q;
 	Q = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];
-	//cout << "Q2 contains: ";
 	for (mpz_class i=0;i<sizeI;i++)
 	{
 		mpz_class index = I[mpz_get_ui(i.get_mpz_t())];
 		Q[mpz_get_ui(i.get_mpz_t())] = P[mpz_get_ui(index.get_mpz_t())];
-	//	cout << Q[mpz_get_ui(i.get_mpz_t())] << ", ";
 	}
 	cout << endl;
 	
@@ -181,8 +191,10 @@ void intersection(mpz_class* &P, mpz_class* &I, int ** E, mpz_class &Lambda, mpz
 				//cout << ' '  <<got->second[k];
 			//cout << endl;
 			count++;
-			sol(sol1,sol2,got->second,E[mpz_get_ui(i.get_mpz_t())]); 
+			cout <<"BEFORE SOL FUNCTION \n";	
+			sol(sol1,sol2,got->second,E[mpz_get_ui(i.get_mpz_t())], h1, h2); 
 			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
+			
 			delete[] Q;
 			return ;
 		}
@@ -262,7 +274,7 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
 
 //FUNCTION(9): PRODUCT SUBSET ATTACK PHASE 1
 
-int product_attack_1(mpz_class* &P, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int*> &sol1, std::list<int*> &sol2, mpz_class &count)
+int product_attack_1(mpz_class* &P, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int>* &sol1, std::list<int>* &sol2, mpz_class &count)
 {
 	int h1;
 	int h2;
@@ -281,12 +293,12 @@ int product_attack_1(mpz_class* &P, mpz_class &Lambda, mpz_class &c, mpz_class**
 	comb_size(sizeI, h2, sizeE2);
 	int** E1;
         E1 = new int*[mpz_get_ui(sizeE1.get_mpz_t())];
-        for (int i=0;i<sizeE1;i++)
-                E1[i] = new int[h1]; //MAKE ARRAY OF INDEXES OF COLUMN SIZE = comb_size
+        for (mpz_class i=0;i<sizeE1;i++)
+                E1[mpz_get_ui(i.get_mpz_t())] = new int[h1]; //MAKE ARRAY OF INDEXES OF COLUMN SIZE = comb_size
 	int** E2;				             //AND ROW SIZE = H1 OR H2
         E2 = new int*[mpz_get_ui(sizeE2.get_mpz_t())];
-        for (int i=0;i<sizeE2;i++)
-                E2[i] = new int[h2]; //
+        for (mpz_class i=0;i<sizeE2;i++)
+                E2[mpz_get_ui(i.get_mpz_t())] = new int[h2]; //
 	cout << "DEBUG BEFORE PERMS" << endl;
         //-----------COMBINATIONS-------------------//
 	//for E1
@@ -338,11 +350,15 @@ int product_attack_1(mpz_class* &P, mpz_class &Lambda, mpz_class &c, mpz_class**
 //cout  << "SOLUTION SET1 " << endl;	
 	
 //TESTING THE INSTERSECTION
-	intersection(P, I[1], E2, Lambda, c, sizeE2, sizeI, U, count,sol1,sol2,h2);	
+	intersection(P, I[1], E2, Lambda, c, sizeE2, sizeI, U, count,sol1,sol2,h1, h2);	
 	cout << endl;
+	for (mpz_class i=0;i<sizeE1;i++)
+                delete[] E1[mpz_get_si(i.get_mpz_t())];
+	for (mpz_class i=0;i<sizeE2;i++)
+                delete[] E2[mpz_get_si(i.get_mpz_t())];
         delete[] E1;
 	delete[] E2;
-	//cout <<"Deleted E1,E2 try to delete c_obj"<<endl;
+	cout <<"Deleted E1,E2 try to delete c_obj"<<endl;
 	delete c_obj1;
 	delete c_obj2;
 	U.clear();
