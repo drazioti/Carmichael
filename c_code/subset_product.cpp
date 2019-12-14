@@ -7,7 +7,14 @@
 #include <vector>
 #include "Combinations.h"
 #include <list>
+#include <fstream>
 #include "unordered_map"
+#include <openssl/md5.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <inttypes.h>
 using namespace std;
 
 
@@ -66,6 +73,79 @@ void comb_size(mpz_class &n, mpz_class k, mpz_class &size)
 }
 
 
+//FUNCTION (1.2): MEMORY CALCULATION FOR UPPER BOUND IN U1
+
+int getmem() {
+	struct rusage ru;
+	struct rlimit rl;
+	getrusage(RUSAGE_SELF, &ru);
+	getrlimit(RLIMIT_DATA, &rl);
+	unsigned long remaining_memory;
+	unsigned long limit = (unsigned long)rl.rlim_cur;
+	cout <<"Limit is : " << limit<< endl;
+	limit = limit/(unsigned long)1000;
+	
+	cout <<"Limit is : " << limit<< endl;
+	cout <<"Rusage is :" << ru.ru_maxrss << endl; 
+	cout <<"Total use :" << float(ru.ru_maxrss)/(float)limit * 100 <<"%"<<endl;
+	remaining_memory = limit - (unsigned long)ru.ru_maxrss;	
+	return remaining_memory;
+
+
+}
+
+//FUNCTION (1.3): MAKING BOUND TO DIVIDE HASHMAP
+//NEEDS DEVELOPMENT to calcuate on Runtime optimal bound
+
+void U_bound(mpz_class size, mpz_class &bound,int &frag){
+	
+	frag = 10;		//frag changable parameter 
+	bound = size/frag;
+	return ;
+
+}
+
+//FUNCTION (2): MD5 HASH FUNCTION FOR MPZ_CLASS OBJECTS
+
+string to_md5_f6_str(mpz_class number){
+	
+	string input = number.get_str();
+	const char* input_ch_Ar = input.c_str();
+       	unsigned char md5digest_ch_Ar[16];	
+	MD5_CTX ctx;
+	MD5_Init(&ctx);
+	MD5_Update(&ctx, input_ch_Ar, strlen(input_ch_Ar));
+	MD5_Final(md5digest_ch_Ar, &ctx);
+
+	char res_ch_Ar[6];
+	string md5_string;
+	for(int i=0;i<6;i++)
+		sprintf(&res_ch_Ar[i*2], "%02x", (unsigned int)md5digest_ch_Ar[i]);
+	
+	md5_string.append(res_ch_Ar);
+	return md5_string;	
+}
+
+//FUCNTION (3): IS_CARMICHAEL FUNCTION TO DEAL WITH UNWANTED COLLISIONS
+
+int is_carmichael(mpz_class &n, mpz_class* &factors, mpz_class &sizef)
+{
+        //cout << "-----DEBUG: ENTERED IS CARMICHAEL-----" << endl;
+        int is=1;
+        for(mpz_class i=0;i<sizef;++i){
+                mpz_class temp;
+                mpz_class temp1= n-1;
+                mpz_class temp2= factors[mpz_get_ui(i.get_mpz_t())] -1;
+                mpz_mod(temp.get_mpz_t(), temp1.get_mpz_t() , temp2.get_mpz_t());
+                //cout << "Round " << i << "mod is : " << temp << endl;
+                if (temp!=0)
+                        is=0;
+        }
+        return is;
+}
+
+
+
 
 //FUCNTION (4): CODE FOR "func1"
 
@@ -79,7 +159,7 @@ mpz_class func1(mpz_class* &P, int* E, mpz_class &Lambda, mpz_class &c, int flag
 	mpz_class prod =1;
 	
 	if (flag==1){		//element of set U1
-		//cout << "Func1 size : " << size << endl;
+		//cout << "Func1 size h2 : " << size << endl;
 		for (mpz_class i=0;i<size;i++){
 			//cout << "Prod element: " << P[mpz_get_ui(i.get_mpz_t())] << endl;
 			int index = E[mpz_get_ui(i.get_mpz_t())];
@@ -93,7 +173,9 @@ mpz_class func1(mpz_class* &P, int* E, mpz_class &Lambda, mpz_class &c, int flag
 		prod *= c;
 		for (mpz_class i=0;i<size;i++) 		//for loop to calculate product
 		{
+				
 				int index = E[mpz_get_ui(i.get_mpz_t())];
+				//cout << "INDEX IS : " << index << endl;
 				mpz_class temp;
 				if(mpz_invert(temp.get_mpz_t(), P[index].get_mpz_t(), Lambda.get_mpz_t())!=0)
 				{
@@ -111,12 +193,15 @@ mpz_class func1(mpz_class* &P, int* E, mpz_class &Lambda, mpz_class &c, int flag
 
 //FUNCTION (5): CODE FOR "func2"
 
-void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, mpz_class &sizeE, unordered_map <string,int*> &Map, mpz_class &sizeI, int h1){
+void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, unordered_multimap <string,int*> &Map, mpz_class &sizeI, int h1, mpz_class &begin, mpz_class &end){
 	cout <<"Entered func2\n";
 	//cout << "Number of rounds or sizeE : " << sizeE << endl;
-	for (mpz_class i=0;i<sizeE;i++){
+	for (mpz_class i=begin;i<end;i++){
 		mpz_class temp=func1(P,E[mpz_get_ui(i.get_mpz_t())],Lambda,c,flag,h1);
-		Map[temp.get_str()] = E[mpz_get_ui(i.get_mpz_t())]; 	
+														
+		std::pair<string, int*> mypair (temp.get_str(), E[i.get_ui()]);	//CHANGE IN ASSIGNING VALUES
+		Map.insert(mypair);							//DUE TO MULTIMAP VS MAP
+		//Map[to_md5_f6_str(temp)] = E[mpz_get_ui(i.get_mpz_t())]; 	
 	}
 
 
@@ -124,16 +209,7 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, mp
 
 //FUNCTION (6): FUNCTIONS FOR U1
 
-void get_P_element(int** &Exp, int* &Q,int r, int index, mpz_class &P_el)
-{	
-	P_el =1;
-	for(int i=0;i<r;i++)
-	{
-		P_el *= pow(Q[i], Exp[index][i]); 
-	}
-}
-
-void U1(mpz_class* &P, mpz_class* &I, int** E, mpz_class &Lambda,mpz_class &sizeE,mpz_class &sizeI,int h1, unordered_map<string, int*> &Map){
+void U1(mpz_class* &P, mpz_class* &I, int** E, mpz_class &Lambda,mpz_class &sizeI,int h1, unordered_multimap<string, int*> &Map, mpz_class &begin, mpz_class &end){
 
 	mpz_class* Q;
 	Q = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];
@@ -149,64 +225,105 @@ void U1(mpz_class* &P, mpz_class* &I, int** E, mpz_class &Lambda,mpz_class &size
 	//cout << endl;
 	mpz_class c=1;
 	cout << "ENTERED U1\n";	
-	func2(Q,E,Lambda,c,1,sizeE, Map, sizeI,h1);
+	func2(Q,E,Lambda,c,1, Map, sizeI,h1,begin,end);
 	delete[] Q;
 }
 //FUNCTION (7): FUNCTION FOR SAVING SUBSET AFTER FINDING INTERSECTION
 
-void sol(std::list<int>* &sol1, std::list<int>* &sol2, int* E1, int* E2, int h1, int h2)
+void sol(std::list<int*> &sol1, std::list<int*> &sol2, int* E1, int* E2, int h1, int h2)
 {
-	cout << "Entered SOL FUCNTION" << endl;
-	for (int i=0;i<h1;i++)
-		sol1->push_back(E1[i]);
-	for (int i=0;i<h2;i++)
-		sol2->push_back(E2[i]);
-	cout << "After pushing the sol" << endl;
+	//cout << "Entered SOL FUCNTION" << endl;
+	int* sol1p = new int[h1];
+	int* sol2p = new int[h2];
+	for(int i=0;i<h1;i++)
+		sol1p[i] = E1[i];
+	for(int i=0;i<h2;i++)
+		sol2p[i] = E2[i];
+	
+	sol1.push_back(sol1p);
+	sol2.push_back(sol2p);
 }
 
 //FUNCTION (8): INTERSECTION FUNCTIONS aka HASHMAP SEARCH
 
-void intersection(mpz_class* &P, mpz_class* &I, int ** E, mpz_class &Lambda, mpz_class &c, mpz_class &sizeE, mpz_class &sizeI, unordered_map <string, int*> &Map, mpz_class &count, std::list<int>* &sol1, std::list<int>* &sol2,int h1, int h2){
+int intersection(mpz_class* &P,mpz_class &sizeP, mpz_class** &I, int* E, mpz_class &Lambda, mpz_class &c, mpz_class &sizeE, mpz_class &sizeI, unordered_multimap <string, int*> &Map, mpz_class &count, std::list<int*> &sol1, std::list<int*> &sol2,int h1, int h2){
 	mpz_class* Q;
 	Q = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];
+	//cout << "Q2 contains: ";
 	for (mpz_class i=0;i<sizeI;i++)
 	{
-		mpz_class index = I[mpz_get_ui(i.get_mpz_t())];
+		mpz_class index = I[1][mpz_get_ui(i.get_mpz_t())];
 		Q[mpz_get_ui(i.get_mpz_t())] = P[mpz_get_ui(index.get_mpz_t())];
+		//cout << Q[mpz_get_ui(i.get_mpz_t())] << ", ";
 	}
-	cout << endl;
-	
+	//cout << endl;
+	//cout << "END OF Q2 " << endl;	
 	//ON THE FLY CALCULATION OF U2 ELEMENTS
-	for (mpz_class i=0;i<sizeE;i++){
-                mpz_class temp=func1(Q,E[mpz_get_ui(i.get_mpz_t())],Lambda,c,2,h2);	
-	
-		//EACH ELEMENT OF U2 IS STORED IN A TEMPORARY
-		//VARIABLE TEMP AND TESTED FOR INTERSECTION
+        mpz_class temp=func1(Q,E,Lambda,c,2,h2);	
+	//cout << " AFTER FUNC1 " << endl;
+	//EACH ELEMENT OF U2 IS STORED IN A TEMPORARY
+	//VARIABLE TEMP AND TESTED FOR INTERSECTION
 
-		unordered_map<string, int*>::const_iterator got = Map.find(temp.get_str());
-		if (got != Map.end()){
-			cout << "!!!!!!!!FOUND INTERSECTION!!!!!!!!" <<  endl;
-			//cout << "Product : " << got->first << " with combination ";
-			//for (int k=0;k<h2;k++)
-				//cout << ' '  <<got->second[k];
-			//cout << endl;
-			count++;
-			cout <<"BEFORE SOL FUNCTION \n";	
-			sol(sol1,sol2,got->second,E[mpz_get_ui(i.get_mpz_t())], h1, h2); 
-			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
+	unordered_multimap<string, int*>::const_iterator got = Map.find(temp.get_str());
+	//cout << "Hashed number is : " << to_md5_f6_str(temp) << endl;
+	if (got != Map.end()){
+		cout << "Inside intersections"<<endl;		
+		mpz_class number=1;
+		int del_size = h1 + h2;
+       	        mpz_class* del_set;
+               	del_set = new mpz_class[h1+ h2];
+
+               	mpz_class* factors;
+               	factors = new mpz_class[mpz_get_ui(sizeP.get_mpz_t()) - del_size];
+               	for (int k=0;k<h1;k++){
+			int index = got->second[k];
+                       	del_set[k] = I[0][index];
+                	}
+               	for (int k=0;k<h2;k++){
+                       	int index = E[k];
+                       	del_set[k+h1] = I[1][index];
+               	}
 			
-			delete[] Q;
-			return ;
-		}
-	}
-	printf("\n\n");
-	cout << "!!!!!!!!!!!FOUND " << count << " CARMICHAEL NUMBERS!!!!!!!!!! " << endl;
-	printf ("\n\n\n");
-	cout << "END OF INTERSECTION" << endl; 
-	delete[] Q;
-//	return 0;
+               	cout << "Del set made " << endl;
+               	std::sort(del_set, del_set + del_size);
+               	int j=0;
+               	mpz_class f_count=0;
+               	for (mpz_class i=0;i<sizeP;i++){
+              		if (mpz_get_ui(i.get_mpz_t()) != del_set[j]){
+                      		number *= P[mpz_get_ui(i.get_mpz_t())];
+				factors[mpz_get_ui(f_count.get_mpz_t())] = P[mpz_get_ui(i.get_mpz_t())];
+                      		++f_count;
+                       		}
+             		else
+                     		++j;
+                }
 
+		if(is_carmichael(number, factors, f_count) == 1){
+			cout << "!!!!!!!!FOUND INTERSECTION!!!!!!!!" <<  endl;
+			count++;
+			sol(sol1,sol2,got->second,E, h1, h2); 
+			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
+			ofstream myfile("carm_num.txt");
+			myfile << f_count << " : [";
+			for (unsigned long f=0;f<f_count;f++)
+				myfile << factors[f] <<", ";
+			myfile <<"]";
+			delete[] factors;
+			delete[] del_set;
+			delete[] Q;
+			return 1;
+			}
+		else
+			cout << "Found a collision" << endl;
+		}
+	//printf("\n\n");
+	//cout << "!!!!!!!!!!!FOUND " << count << " CARMICHAEL NUMBERS!!!!!!!!!! " << endl;
+	//printf ("\n\n\n");
+	//cout << "END OF INTERSECTION" << endl; 
+	delete[] Q;
+	return 0;
 }
+
 
 //FUNCTION (8): GENERATE I SET FUNCTION
 
@@ -247,7 +364,7 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
         else{
 		unordered_map <unsigned int, unsigned int> S;
                 gmp_randstate_t state;
-                gmp_randinit_default(state);
+                gmp_randinit_mt(state);
                 mpz_class i=0;
                 while(i<2*b)
                 {
@@ -274,7 +391,7 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
 
 //FUNCTION(9): PRODUCT SUBSET ATTACK PHASE 1
 
-int product_attack_1(mpz_class* &P, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int>* &sol1, std::list<int>* &sol2, mpz_class &count)
+int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int*> &sol1, std::list<int*> &sol2, mpz_class &count)
 {
 	int h1;
 	int h2;
@@ -291,146 +408,103 @@ int product_attack_1(mpz_class* &P, mpz_class &Lambda, mpz_class &c, mpz_class**
 	mpz_class sizeE2;
 	comb_size(sizeI, h1, sizeE1);
 	comb_size(sizeI, h2, sizeE2);
+	
 	int** E1;
-        E1 = new int*[mpz_get_ui(sizeE1.get_mpz_t())];
-        for (mpz_class i=0;i<sizeE1;i++)
-                E1[mpz_get_ui(i.get_mpz_t())] = new int[h1]; //MAKE ARRAY OF INDEXES OF COLUMN SIZE = comb_size
-	int** E2;				             //AND ROW SIZE = H1 OR H2
-        E2 = new int*[mpz_get_ui(sizeE2.get_mpz_t())];
-        for (mpz_class i=0;i<sizeE2;i++)
-                E2[mpz_get_ui(i.get_mpz_t())] = new int[h2]; //
+        E1 = new int*[sizeE1.get_ui()];
+        
+	for (mpz_class i=0;i<sizeE1;i++)
+                E1[i.get_ui()] = new int[h1];
 	cout << "DEBUG BEFORE PERMS" << endl;
         //-----------COMBINATIONS-------------------//
-	//for E1
 
 	Combinations* c_obj1;
-	c_obj1	=new Combinations(mpz_get_si(sizeI.get_mpz_t()),h1);
+	c_obj1	=new Combinations(sizeI.get_ui(),h1);
 	
 	cout << "SizeI is : " << sizeI << endl;
 	cout << "h1 is : " << h1 << endl;
+	cout << "h2 is : " << h1 << endl;
 	
-	for (unsigned long i=0;i<mpz_get_ui(sizeE1.get_mpz_t());i++){
-		std::vector<short> cmb;
+	for (unsigned long i=0;i<sizeE1.get_ui();i++){
+		std::vector<int> cmb;
 		cmb = c_obj1->next_combination();
 		int j=0;
-		for (std::vector<short>::iterator it = cmb.begin();it != cmb.end(); ++it)
+		for (std::vector<int>::iterator it = cmb.begin();it != cmb.end(); ++it)
 			{
 				E1[i][j] = *it;
 				j++;
 			}
 	}
-	//for E2
+	delete c_obj1;
+	cout << "Perms done ! " << endl;
+	
+	unordered_multimap <string, int*> U;
+	
+	cout <<endl;
+	cout <<endl;
+//MAKING SLICED U1	
+	
+	
+	mpz_class bound;
+	int frag;
+	U_bound(sizeE1,bound,frag);
+	int counter=0;
+	
+	for (;counter<frag;counter++){
+		mpz_class begin = counter * bound;
+		mpz_class end = (counter+1)*bound;
+		if (counter+1!=frag)
+			U1(P, I[0], E1, Lambda, sizeI,h1, U,begin,end);
+		else
+		{	
+			begin = sizeE1-bound;
+			end = sizeE1;
+			U1(P, I[0], E1, Lambda, sizeI,h1, U,begin,end);
+		}
 		
-	Combinations* c_obj2;
-        c_obj2  =new Combinations(mpz_get_si(sizeI.get_mpz_t()),h2);
-
-	for (unsigned long i=0;i<mpz_get_ui(sizeE2.get_mpz_t());i++){
-                std::vector<short> cmb;
-                cmb = c_obj2->next_combination();
-		int j=0;
-                for (std::vector<short>::iterator it = cmb.begin();it != cmb.end(); ++it)
+		cout << "U1 done" << endl;
+		cout << "Hashtable size : " << U.size() << endl;
+		
+//*********************END OF FRAGMENTATION************************************//		
+		
+		//raise(SIGINT);
+		cout << endl;	
+		//TESTING THE INSTERSECTION
+		Combinations* c_obj2;
+        	c_obj2  =new Combinations(sizeI.get_ui(),h2);
+		int inter=0;
+		for (unsigned long i=0;i<sizeE2.get_ui();i++){
+                	//cout << "Entered intersection loop" << endl;
+			std::vector<int> cmb;
+                	cmb = c_obj2->next_combination();
+                	int j=0;
+			int* temp_E = new int[h2];
+                	for (std::vector<int>::iterator it = cmb.begin();it != cmb.end(); ++it)
                         {
-                                E2[i][j] = *it;
+				temp_E[j] = *it;
                                 j++;
                         }
-        }
-
-	
-	cout << "Perms done ! " << endl;
-	//
-	unordered_map <string, int*> U;
-	
-	cout <<endl;
-	cout <<endl;
-	U1(P, I[0], E1, Lambda, sizeE1, sizeI,h1, U);
-       	cout << "U1 done" << endl;
-//TESTING THE MAP
-	cout << endl;
-//SOLUTION SETS
-//cout  << "SOLUTION SET1 " << endl;	
-	
-//TESTING THE INSTERSECTION
-	intersection(P, I[1], E2, Lambda, c, sizeE2, sizeI, U, count,sol1,sol2,h1, h2);	
+			inter = intersection(P, sizeP, I, temp_E, Lambda, c, sizeE2, sizeI, U, count,sol1,sol2,h1,h2);
+			if (inter==1)
+				break;
+			delete[] temp_E;
+        	}
+		
+		U.clear();
+		delete c_obj2;
+		if (inter==1)
+			break;
+	}
 	cout << endl;
 	for (mpz_class i=0;i<sizeE1;i++)
-                delete[] E1[mpz_get_si(i.get_mpz_t())];
-	for (mpz_class i=0;i<sizeE2;i++)
-                delete[] E2[mpz_get_si(i.get_mpz_t())];
+                delete[] E1[mpz_get_ui(i.get_mpz_t())];
+
         delete[] E1;
-	delete[] E2;
-	cout <<"Deleted E1,E2 try to delete c_obj"<<endl;
-	delete c_obj1;
-	delete c_obj2;
+	
 	U.clear();
-	cout << endl;
+	//cout << endl;
+	//cout << " R limit exp: " << endl;
+	//long mem = getmem();
+	//cout << mem<< endl;
 	return 0;	
-		
-}	
-
-
-
-
-
-
-
-
-//##################################TESTING###########################
-//int main(){
-//	mpz_class* L ;
-//	L = new mpz_class[5];
-//	L[0]=1;
-//	L[1]=0;
-//	L[2]=1;
-//	L[3]=0;
-//	L[4]=1;
-	//string str = "abc";
-	//mpz_class* ones;
-	//ones = new mpz_class[5];
-	//ones = positions_of_1(L,5);
-	// n = str.size();
-	//perms(str,0,n-1);
-	//for (int i=0;i<5;i++)
-	//{
-	//	cout << ones[i] << endl;
-	//}
-
-
-//PERMS TESTING : START
 	
-//	mpz_class count=0;
-//	char** E;
-//	E = new char*[10];
-//	for (int i=0;i<10;i++)
-//		E[i] = new char[5];
-//	for (int i=0;i<10;i++){
-//                for (int j=0;j<5;j++){
-//                        E[i][j] = '0';
-//                }
-//        }
-
-	//perms(5,3,count, E);
-	//for (int i=0;i<10;i++){
-	//	cout << "Bitstring " <<i<< " is: ";
-	//	for (int j=0;j<5;j++){
-	//		cout << E[i][j];
-	//	}
-	//	cout << endl;
-	//}
-	
-
-
-//PERMS TESTING : END
-
-
-//GEN_I TESTING: START
-	
-//	mpz_class n=100;			// n is the size of |P|
-//	mpz_class b=15;			// b must be smaller or equal to n
-//	mpz_class** I;
-//	I = new mpz_class*[2];
-//	I[0] = new  mpz_class[mpz_get_ui(b.get_mpz_t())];
-//	I[1] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
-//	gen_I(n,b,1,I);
-
-//GET_I TESTING: END
-
+}

@@ -16,7 +16,7 @@ Combinations::Combinations(int n,int r){
     //     cmb_v.at(i)=i;
 
     //push to the vector 0,1,2,...,b
-    for (short i = 0; i < this->r; i++){
+    for (int i = 0; i < this->r; i++){
         cmb_v.push_back(i);
     }
     // std::cout << "c -> n : "<< this->n << std::endl;
@@ -48,7 +48,7 @@ void Combinations::get_size(mpz_class &result){
 /** 
  *	set vector as the new combination
  */
-std::vector<short> Combinations::next_combination(){
+std::vector<int> Combinations::next_combination(){
     if(r==0){
         return cmb_v;
     }

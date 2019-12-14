@@ -19,10 +19,10 @@ class Combinations{
 		/** 
 		 *	set vector as the new combination
 		 */
-		std::vector<short> next_combination();
+		std::vector<int> next_combination();
 	private:
 		int n,r;// n,r
-		std::vector<short> cmb_v;//vec with last result
+		std::vector<int> cmb_v;//vec with last result
 		/**
 		 *  set mpz_class t as the factorial of n
 		 */
