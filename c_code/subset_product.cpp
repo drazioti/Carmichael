@@ -99,7 +99,7 @@ int getmem() {
 
 void U_bound(mpz_class size, mpz_class &bound,int &frag){
 	
-	frag = 10;		//frag changable parameter 
+	frag = 16;		//frag changable parameter 
 	bound = size/frag;
 	return ;
 
@@ -334,11 +334,11 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
         }
         mpz_class bound;
         if (flag==0){                   //bound is set to n/2
-                cout << "0-option sets the bound to n/2" << endl;
+                cout << "the bound is n/2" << endl;
                 bound= n/2;
         }
         else if (flag==1){
-                cout << "1-option sets the bound to b" << endl;
+                //cout << "the bound is" << b << endl;
                 bound = b;
         }
         else{
@@ -387,8 +387,6 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
 	
 }
 
-
-
 //FUNCTION(9): PRODUCT SUBSET ATTACK PHASE 1
 
 int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int*> &sol1, std::list<int*> &sol2, mpz_class &count)
@@ -404,25 +402,25 @@ int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_clas
 		h2=h1;
 	}
 
-        mpz_class sizeE1;
+    mpz_class sizeE1;
 	mpz_class sizeE2;
 	comb_size(sizeI, h1, sizeE1);
 	comb_size(sizeI, h2, sizeE2);
 	
 	int** E1;
-        E1 = new int*[sizeE1.get_ui()];
+    E1 = new int*[sizeE1.get_ui()];
         
 	for (mpz_class i=0;i<sizeE1;i++)
                 E1[i.get_ui()] = new int[h1];
-	cout << "DEBUG BEFORE PERMS" << endl;
+	//cout << "DEBUG BEFORE PERMS" << endl;
         //-----------COMBINATIONS-------------------//
 
 	Combinations* c_obj1;
 	c_obj1	=new Combinations(sizeI.get_ui(),h1);
 	
-	cout << "SizeI is : " << sizeI << endl;
-	cout << "h1 is : " << h1 << endl;
-	cout << "h2 is : " << h1 << endl;
+	cout << "Size of I is : " << sizeI << endl;
+	cout << "h1 = " << h1 << endl;
+	cout << "h2 = " << h2 << endl;
 	
 	for (unsigned long i=0;i<sizeE1.get_ui();i++){
 		std::vector<int> cmb;
@@ -436,14 +434,10 @@ int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_clas
 	}
 	delete c_obj1;
 	cout << "Perms done ! " << endl;
-	
-	unordered_multimap <string, int*> U;
-	
+	unordered_multimap <string, int*> U;	
 	cout <<endl;
 	cout <<endl;
 //MAKING SLICED U1	
-	
-	
 	mpz_class bound;
 	int frag;
 	U_bound(sizeE1,bound,frag);
@@ -473,10 +467,10 @@ int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_clas
         	c_obj2  =new Combinations(sizeI.get_ui(),h2);
 		int inter=0;
 		for (unsigned long i=0;i<sizeE2.get_ui();i++){
-                	//cout << "Entered intersection loop" << endl;
+		    //cout << "Entered intersection loop" << endl;
 			std::vector<int> cmb;
-                	cmb = c_obj2->next_combination();
-                	int j=0;
+            cmb = c_obj2->next_combination();
+           	int j=0;
 			int* temp_E = new int[h2];
                 	for (std::vector<int>::iterator it = cmb.begin();it != cmb.end(); ++it)
                         {
@@ -508,3 +502,4 @@ int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_clas
 	return 0;	
 	
 }
+

@@ -51,7 +51,7 @@ void set_Q(int r,int* &Q){
 	}
 	int q=3;
 	Q[0] = 2;
-	cout << "DEBUGGIN THE Q SET FUNCTION" << endl;
+	//cout << "DEBUGGIN THE Q SET FUNCTION" << endl;
 	mpz_class temp;
 	for (int i=1;i<r;i++){
 		temp = q;
@@ -86,8 +86,8 @@ void set_Q(int r,int* &Q){
 void dup_array(int* A,int* B,int size, int** &out){
 
         for (int i=0;i<size;i++){
-                cout << "P["<<i<<"] is: " << A[i] << endl;
-                cout << "H["<<i<<"] is: " << B[i] << endl;
+               // cout << "P["<<i<<"] is: " << A[i] << endl;
+               // cout << "H["<<i<<"] is: " << B[i] << endl;
                 out[0][i] = A[i];
                 out[1][i] = B[i];
         }
@@ -140,10 +140,8 @@ void divisors(int* P, int* H, int r,mpz_class &size, mpz_class* &divs){
 	delete[] dup;
 }
 
-
 void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<mpz_class> &P){
-
-        mpz_class size_d=1; 
+    mpz_class size_d=1; 
 	multiply_list(H,r,size_d);
         mpz_class* divs;
         divs = new mpz_class[mpz_get_ui(size_d.get_mpz_t())];
@@ -172,6 +170,7 @@ mpz_class get_P_element(int* Q, int* H, int r){
 
 //THIS CODE ABOVE IS USED FOR THE OPTIMIZED VERSION OF STORING THE
 //THE P SET
+
 int is_carmichael(mpz_class &n, mpz_class* &factors, mpz_class &sizef);
 
 //FUNCTION(6): MAKE T_SET
@@ -183,7 +182,7 @@ int T_set(mpz_class* &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mp
 		b*= P[mpz_get_ui(i.get_mpz_t())];
 		mpz_mod(b.get_mpz_t(), b.get_mpz_t(), Lambda.get_mpz_t());
 	}
-	mpz_class hamming =8;
+	//mpz_class hamming =8;
 	mpz_class count=0;
 	std::list<int*> sol1;
 	std::list<int*> sol2;
@@ -202,8 +201,6 @@ int T_set(mpz_class* &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mp
 	return 0;
 }	
 
-
-
 //FUNCTION(7): PRODUCING THE CARMICHAEL NUMBER FROM THE SOL1,SOL2 SETS
 //	       THIS FUNCTION IMPLEMENTS THE S SET OF ERDOS ALGORITHM	
 
@@ -211,7 +208,7 @@ void extract_number(mpz_class* &P, mpz_class** &I,mpz_class &sizeI, std::list<in
 	mpz_class* subset1;
 	subset1 = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];
 	mpz_class* subset2;
-	subset2 = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];					//SUBSETS OF P BASED ON I1,I2
+	subset2 = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];	 //SUBSETS OF P BASED ON I1,I2
 	
 	//cout << "---DEBUG: INSIDE EXTRACT NUMBER----" <<endl;
 	for (mpz_class i=0;i<sizeI;++i)
@@ -229,7 +226,9 @@ void extract_number(mpz_class* &P, mpz_class** &I,mpz_class &sizeI, std::list<in
 
 	for(;it1 != sol1.end() && it2!=sol2.end() && counter<sol1.size(); ++it1, ++it2, ++counter)
 	{
+
 //FACTORS FOR IS CARMICHAEL FUNCTION
+
 		mpz_class* factors;
 		mpz_class fsize = h1 + h2;
 		factors = new mpz_class[mpz_get_ui(fsize.get_mpz_t())];
@@ -261,24 +260,30 @@ void extract_number(mpz_class* &P, mpz_class** &I,mpz_class &sizeI, std::list<in
 	cout << "SET S IS COMPLETE" << endl;
 }
 
+
 //--------------------------------------------------------------
+
+
 int main(){
 	clock_t startP, endP;
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN-------//	
-	int r=10;		//number of first primes
-	int hamming =21;		
-	mpz_class b =29;
 	
+	int r=12;		//number of first primes
+	int hamming =21;		
+	mpz_class b =33;
 	int H[r];
+
 	//INITIALIZING H TO ONES FOR SIMPLICITY
+	
 	for (int i=0;i<r;i++){
 		H[i] =1;
 	}
+	
 	H[0]=8;
-	H[1]=3;
-	H[2]=3;
+	H[1]=4;
+	H[2]=4;
 	H[3]=3;
 	H[4]=2;
 	//H[5]=7;
@@ -288,23 +293,24 @@ int main(){
 //-----------------------------------------//
 
 //START DEBUGGING
+
 	int* Q;
     Q = new int[r];
-
-	cout << "1) STARTED RUNNING" << endl; 				//DEBUG POINT (1)
+	cout << "1) STARTED RUNNING" << endl; 		    //DEBUG POINT (1)
 	set_Q(r, Q);
-	cout << "Q set done" << endl;					//DEBUG POINT(2)
+	//cout << "Q set done" << endl;					//DEBUG POINT(2)
 	Lambda(Q, H, r, L);
-	cout << "Lambda done" << endl;
+	//cout << "Lambda done" << endl;
 	cout << "Lambda is : " << L << endl; 
 	startP = clock();
-  //DEBUG POINT(3)
+    //DEBUG POINT(3)
 	std::list<mpz_class> P;
 	make_P_set(Q,H,r,L,P);
-
 	endP = clock();
-	printf("\n\n\n");
-
+	cout << "hamming : " << hamming << endl;
+	//cout << "b : " << b << endl;
+	cout << "P size is : " << P.size() << endl;
+	cout << "looking for Carmichaels with " << P.size() - hamming << " factors" << endl;
 	printf("\n");
 
 	//print out P set
@@ -313,10 +319,11 @@ int main(){
 	//}	
 	//print Q set
 	//printf("\n\n");
-	for (int i=0;i<r;i++){
-		cout << "Q["<<i<<"] is: "<< Q[i] << endl; 
-	}
-	printf ("\nTime for P set is : %f seconds", (double) (endP-startP)/1000000);
+	
+	//for (int i=0;i<r;i++){
+	//	cout << "Q["<<i<<"] is: "<< Q[i] << endl; 
+	//}
+	//printf ("\nTime for P set is : %f seconds", (double) (endP-startP)/1000000);
 //WHOLE TESTING
 	
 	unsigned long list_size = P.size();
@@ -333,14 +340,11 @@ int main(){
 //START THE TEST
 
 	while(found==0){
-//	for(int ite=0;ite<100;ite++){ 
-		
-		
+//	for(int ite=0;ite<100;ite++){ 		
 		mpz_class** I;			
 		I = new mpz_class*[2];		//RESULTS
 		I[0] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
 		I[1] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
-	//b=2;
 		gen_I(n,b,1, I);
 		//cout << "I size is : " << n << endl;
 		//for(int i=0;i<b;i++){
@@ -349,7 +353,7 @@ int main(){
 		//for(int i=0;i<n;i++){
 		//	cout << "Array P[" << i <<"] element: " << P2[i] << endl;
 		//}
-		mpz_class c=1;
+		//mpz_class c=1;
 		//std::list<int*> sol1;
 		//std::list<int*> sol2;
 		mpz_class count =0;						//THIS IS A COUNTER FOR HOW MANY INTERSECTIONS WE GET
@@ -361,17 +365,17 @@ int main(){
 //ARE INDEED CARMICHAEL
 
 //!!!!!BAD IMPLEMENTATION NEED CHANGE FOR H1,H2!!!!!!!!
-		int h1;
-        int h2;
-		int local_hamming_weight = 8;
-    	if(local_hamming_weight%2==1){
-            	h1 = local_hamming_weight/2;
-            	h2 = h1+1;
-    	}
-    	else{
-            	h1 = local_hamming_weight/2;
-            	h2=h1;
-    	}
+//		int h1;
+//       int h2;
+//		int local_hamming_weight = 8;
+//    	if(local_hamming_weight%2==1){
+//            	h1 = local_hamming_weight/2;
+//            	h2 = h1+1;
+//    	}
+//   	else{
+//            	h1 = local_hamming_weight/2;
+//            	h2=h1;
+//    	}
 
 		//mpz_class* numbers;
 		//cout << "ALLOCATING " << count << " BOXES FOR NUMBERS" << endl;
@@ -383,7 +387,6 @@ int main(){
 		delete[] I[0];
 		delete[] I[1];
 		delete[] I;
-		cout << "P size is : " << P.size() << endl;
 		if (found==1)
 			break;
 //	}
@@ -391,9 +394,11 @@ int main(){
 	clock_t end = clock();
 	cout << "Time elapsed: " << double(end - begin)/CLOCKS_PER_SEC << endl;
 	if(found==0)
-		cout << "DID ALL ITERATIONS WITHOUT SUCCESS " << endl;
+		cout << "DID ALL The ITERATIONS WITHOUT any SUCCESS " << endl;
+	
 	//sol1.merge(sol2);
-//TEST SET
+    //TEST SET
+	
 	delete[] Q;
 	delete[] P2;	
 	return 0;	
