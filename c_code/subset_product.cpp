@@ -99,8 +99,8 @@ int getmem() {
 
 void U_bound(mpz_class size, mpz_class &bound,int &frag){
 	
-	frag = 16;		//frag changable parameter 
-	cout <<"frag =" << frag<< endl;
+	frag = 4;		//frag changable parameter 
+	cout <<"frag = " << frag<< endl;
 	bound = size/frag;
 	return ;
 
@@ -195,7 +195,7 @@ mpz_class func1(mpz_class* &P, int* E, mpz_class &Lambda, mpz_class &c, int flag
 //FUNCTION (5): CODE FOR "func2"
 
 void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, unordered_multimap <string,int*> &Map, mpz_class &sizeI, int h1, mpz_class &begin, mpz_class &end){
-	cout <<"Entered func2\n";
+	//cout <<"Entered func2\n";
 	//cout << "Number of rounds or sizeE : " << sizeE << endl;
 	for (mpz_class i=begin;i<end;i++){
 		mpz_class temp=func1(P,E[mpz_get_ui(i.get_mpz_t())],Lambda,c,flag,h1);
@@ -225,7 +225,7 @@ void U1(mpz_class* &P, mpz_class* &I, int** E, mpz_class &Lambda,mpz_class &size
 	//cout <<"."<<endl;
 	//cout << endl;
 	mpz_class c=1;
-	cout << "ENTERED U1\n";	
+	//cout << "ENTERED U1\n";	
 	func2(Q,E,Lambda,c,1, Map, sizeI,h1,begin,end);
 	delete[] Q;
 }
@@ -428,10 +428,10 @@ int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_clas
 			}
 	}
 	delete c_obj1;
-	cout << "Perms done ! " << endl;
+	//cout << "Perms done ! " << endl;
 	unordered_multimap <string, int*> U;	
 	cout <<endl;
-	cout <<endl;
+//	cout <<endl;
 //MAKING SLICED U1	
 	mpz_class bound;
 	int frag;

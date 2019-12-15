@@ -27,11 +27,6 @@ void from_list_to_array(std::list<mpz_class> &source, mpz_class* &dest){
         }
 }
 
-
-//FUCNTION (1): FUNCTIONS FOR SIZE OF P
-
-//NOT USED
-
 //FUNCTION (2): CALCULATING LAMBDA
 
 void Lambda(int* Q,int* H,int r, mpz_class &Lambda){
@@ -43,7 +38,6 @@ void Lambda(int* Q,int* H,int r, mpz_class &Lambda){
 	}
 	return;
 }
-
 
 //FUNCTION (3): CHOOSING FIRST r PRIMES FOR Q SET
 
@@ -62,16 +56,13 @@ void set_Q(int r,int* &Q){
                 {
 			q+=2;
 			temp = q;
-                }
-	       	
+                }	       	
                 Q[i] = q;
                 q +=2;
         }
 }
 
-
 //FUNCTION (4): FUNCTIONS FOR MAKING THE P SET
-
 
 void dup_array(int* A,int* B,int size, int** &out){
 
@@ -82,7 +73,6 @@ void dup_array(int* A,int* B,int size, int** &out){
                 out[1][i] = B[i];
         }
 }
-
 
 void multiply_list(int* H,int r, mpz_class &result){
       
@@ -104,8 +94,6 @@ void divisors(int* P, int* H, int r,mpz_class &size, mpz_class* &divs){
         divs[0] = 1;
         mpz_class out_count =1;
         for (int i=0;i<r;i++){
-
-
                 mpz_class* prev;
                 prev = new mpz_class[mpz_get_ui(size.get_mpz_t())];
                 mpz_class pn = 1;
@@ -169,7 +157,6 @@ int T_set(mpz_class* &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mp
 		b*= P[mpz_get_ui(i.get_mpz_t())];
 		mpz_mod(b.get_mpz_t(), b.get_mpz_t(), Lambda.get_mpz_t());
 	}
-	//mpz_class hamming =8;
 	mpz_class count=0;
 	std::list<int*> sol1;
 	std::list<int*> sol2;
@@ -213,7 +200,7 @@ void extract_number(mpz_class* &P, mpz_class** &I,mpz_class &sizeI, std::list<in
 	for(;it1 != sol1.end() && it2!=sol2.end() && counter<sol1.size(); ++it1, ++it2, ++counter)
 	{
 
-//FACTORS FOR IS CARMICHAEL FUNCTION
+//Prime FACTORS FOR the CARMICHAEL FUNCTION
 
 		mpz_class* factors;
 		mpz_class fsize = h1 + h2;
@@ -246,19 +233,18 @@ void extract_number(mpz_class* &P, mpz_class** &I,mpz_class &sizeI, std::list<in
 	cout << "SET S IS COMPLETE" << endl;
 }
 
-
-//--------------------------------------------------------------
-
+//--------------------------------------------------------------//
 
 int main(){
 	clock_t startP, endP;
 	mpz_class L=1;
 	
-//-----CHANGE THESE PARAMETERS TO RUN-------//	
+//-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
+// Also there is the parameter frag //
 	
-	int r=12;		    //number of first primes
-	int hamming =21;	//the hamming weight	
-	mpz_class b =33;    //the bound
+	int r=6;		    //number of first primes
+	int hamming =15;	//the hamming weight	
+	mpz_class b =30;    //the bound
 	int H[r];
 
 	//INITIALIZING H TO ONES
@@ -266,7 +252,7 @@ int main(){
 	for (int i=0;i<r;i++){
 		H[i] =1;
 	}
-	
+
 	H[0]=8;
 	H[1]=4;
 	H[2]=4;
@@ -282,7 +268,7 @@ int main(){
 
 	int* Q;
     Q = new int[r];
-	cout << "1) STARTED RUNNING" << endl; 		    //DEBUG POINT (1)
+	//cout << "1) STARTED RUNNING" << endl; 		    //DEBUG POINT (1)
 	set_Q(r, Q);
 	//cout << "Q set done" << endl;					//DEBUG POINT(2)
 	Lambda(Q, H, r, L);
@@ -308,11 +294,10 @@ int main(){
 //GENERATING I set
 	
 	mpz_class n=list_size;
-	int found = 0;				//FOR TESTING WE WILL CHOOSE
+	int found = 0;				
 	clock_t begin = clock();
 	
 //START THE TEST
-
 	while(found==0){
 //	for(int ite=0;ite<100;ite++){ 		
 		mpz_class** I;			
@@ -320,14 +305,13 @@ int main(){
 		I[0] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
 		I[1] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
 		gen_I(n,b,1, I);
-		mpz_class count =0;						//THIS IS A COUNTER FOR HOW MANY INTERSECTIONS WE GET
+		mpz_class count =0;		//THIS IS A COUNTER FOR HOW MANY INTERSECTIONS WE GET
 
-//AT THIS STAGE WE HAVE THE COMBINATIONS IN SOL1, SOL2 THAT 
-//PRODUCE THE CARMICHAEL NUMBERS
-//SO WE NEED TO EXTRACT THESE NUMBERS AND CHECK IF THEY 
-//ARE INDEED CARMICHAEL
-
-		found = T_set(P2, n, L, I,b,hamming);	
+		//AT THIS STAGE WE HAVE THE COMBINATIONS IN SOL1, SOL2 THAT 
+		//PRODUCE THE CARMICHAEL NUMBERS
+		//SO WE NEED TO EXTRACT THESE NUMBERS AND CHECK IF THEY 
+		//ARE INDEED CARMICHAEL
+		found = T_set(P2, n, L, I, b, hamming);
 		delete[] I[0];
 		delete[] I[1];
 		delete[] I;
@@ -335,11 +319,13 @@ int main(){
 			break;
 }
 	clock_t end = clock();
-	cout << "Time elapsed: " << double(end - begin)/CLOCKS_PER_SEC << endl;
+//	cout << "Time elapsed (sec): " << double(end - begin)/CLOCKS_PER_SEC << endl;
+	cout << "Time elapsed (min): " << double(end - begin)/(60*CLOCKS_PER_SEC) << endl;
+	cout << endl;
 	if(found==0)
-		cout << "DID ALL The ITERATIONS WITHOUT any SUCCESS " << endl;
-	
+		cout << "The algorithm did ALL The ITERATIONS WITHOUT any SUCCESS" << endl;	
 	delete[] Q;
 	delete[] P2;	
 	return 0;	
 }
+
