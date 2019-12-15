@@ -1,3 +1,6 @@
+// $g++ --std=c++11 carmi1.cpp Combinations3.cpp -lgmpxx -lgmp -lcrypto
+// $nohup ./a.out > script.out 2>&1 &
+
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,13 +58,8 @@ void set_Q(int r,int* &Q){
 	mpz_class temp;
 	for (int i=1;i<r;i++){
 		temp = q;
-		//cout << "First loop entered" << endl;
-		//cout << "Temp value is : " << temp << endl;
-		//raise(SIGINT);
                 while (mpz_probab_prime_p(temp.get_mpz_t(), 5) != 1 && mpz_probab_prime_p(temp.get_mpz_t(), 5) != 2)
                 {
-			//cout  << "Probab prime value: " << mpz_probab_prime_p(temp.get_mpz_t(), 5) <<  endl;
-                        //cout  << "And temp value : " << temp <<endl;
 			q+=2;
 			temp = q;
                 }
@@ -73,14 +71,6 @@ void set_Q(int r,int* &Q){
 
 
 //FUNCTION (4): FUNCTIONS FOR MAKING THE P SET
-
-
-//void arrcpy(mpz_class* &dest, mpz_class* source,mpz_class size){
-//        for (mpz_class i=0;i<size;i++){
-//                dest[mpz_get_ui(i.get_mpz_t())] = source[mpz_get_ui(i.get_mpz_t())];
-//        }
-//}
-
 
 
 void dup_array(int* A,int* B,int size, int** &out){
@@ -121,12 +111,9 @@ void divisors(int* P, int* H, int r,mpz_class &size, mpz_class* &divs){
                 mpz_class pn = 1;
                 arrcpy(prev, divs, size);
                 for (int j=0;j<dup[1][i];j++){
-                        //printf("Round P[%d]=%d, current power: %d \n",i,P[i],j);
                         pn *= dup[0][i];
-                        //cout << "Pn this round got:" << pn << endl;
                         mpz_class k = 0;
                         while (prev[mpz_get_ui(k.get_mpz_t())] != 0 && k<size){
-                                //cout << "Got into the last while in round" << i << " and current prev is:" << prev[mpz_get_ui(k.get_mpz_t())] << endl;
                                 divs[mpz_get_ui(out_count.get_mpz_t())] = prev[mpz_get_ui(k.get_mpz_t())] * pn;
                                 out_count++;
                                 k++;
@@ -210,7 +197,6 @@ void extract_number(mpz_class* &P, mpz_class** &I,mpz_class &sizeI, std::list<in
 	mpz_class* subset2;
 	subset2 = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];	 //SUBSETS OF P BASED ON I1,I2
 	
-	//cout << "---DEBUG: INSIDE EXTRACT NUMBER----" <<endl;
 	for (mpz_class i=0;i<sizeI;++i)
 	{
 		mpz_class index = I[0][mpz_get_ui(i.get_mpz_t())];
@@ -270,12 +256,12 @@ int main(){
 	
 //-----CHANGE THESE PARAMETERS TO RUN-------//	
 	
-	int r=12;		//number of first primes
-	int hamming =21;		
-	mpz_class b =33;
+	int r=12;		    //number of first primes
+	int hamming =21;	//the hamming weight	
+	mpz_class b =33;    //the bound
 	int H[r];
 
-	//INITIALIZING H TO ONES FOR SIMPLICITY
+	//INITIALIZING H TO ONES
 	
 	for (int i=0;i<r;i++){
 		H[i] =1;
@@ -308,22 +294,10 @@ int main(){
 	make_P_set(Q,H,r,L,P);
 	endP = clock();
 	cout << "hamming : " << hamming << endl;
-	//cout << "b : " << b << endl;
 	cout << "P size is : " << P.size() << endl;
 	cout << "looking for Carmichaels with " << P.size() - hamming << " factors" << endl;
 	printf("\n");
 
-	//print out P set
-	//for(std::list<mpz_class>::iterator it=P.begin();it != P.end(); ++it){	
-	//	cout << "P element: "<< *it << endl;
-	//}	
-	//print Q set
-	//printf("\n\n");
-	
-	//for (int i=0;i<r;i++){
-	//	cout << "Q["<<i<<"] is: "<< Q[i] << endl; 
-	//}
-	//printf ("\nTime for P set is : %f seconds", (double) (endP-startP)/1000000);
 //WHOLE TESTING
 	
 	unsigned long list_size = P.size();
@@ -346,42 +320,12 @@ int main(){
 		I[0] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
 		I[1] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
 		gen_I(n,b,1, I);
-		//cout << "I size is : " << n << endl;
-		//for(int i=0;i<b;i++){
-              	//	cout << "I[" << i<< "] are: "<< I[0][i] << " and " << I[1][i] << endl;
-		//}
-		//for(int i=0;i<n;i++){
-		//	cout << "Array P[" << i <<"] element: " << P2[i] << endl;
-		//}
-		//mpz_class c=1;
-		//std::list<int*> sol1;
-		//std::list<int*> sol2;
 		mpz_class count =0;						//THIS IS A COUNTER FOR HOW MANY INTERSECTIONS WE GET
-	//product_attack_1(P2, L, c, I,8,b, sol1, sol2, count);    
 
 //AT THIS STAGE WE HAVE THE COMBINATIONS IN SOL1, SOL2 THAT 
 //PRODUCE THE CARMICHAEL NUMBERS
 //SO WE NEED TO EXTRACT THESE NUMBERS AND CHECK IF THEY 
 //ARE INDEED CARMICHAEL
-
-//!!!!!BAD IMPLEMENTATION NEED CHANGE FOR H1,H2!!!!!!!!
-//		int h1;
-//       int h2;
-//		int local_hamming_weight = 8;
-//    	if(local_hamming_weight%2==1){
-//            	h1 = local_hamming_weight/2;
-//            	h2 = h1+1;
-//    	}
-//   	else{
-//            	h1 = local_hamming_weight/2;
-//            	h2=h1;
-//    	}
-
-		//mpz_class* numbers;
-		//cout << "ALLOCATING " << count << " BOXES FOR NUMBERS" << endl;
-		//numbers = new mpz_class[mpz_get_ui(count.get_mpz_t())];
-		
-		//extract_number(P2, I, b, sol1, sol2, h1, h2, numbers);
 
 		found = T_set(P2, n, L, I,b,hamming);	
 		delete[] I[0];
@@ -389,15 +333,11 @@ int main(){
 		delete[] I;
 		if (found==1)
 			break;
-//	}
 }
 	clock_t end = clock();
 	cout << "Time elapsed: " << double(end - begin)/CLOCKS_PER_SEC << endl;
 	if(found==0)
 		cout << "DID ALL The ITERATIONS WITHOUT any SUCCESS " << endl;
-	
-	//sol1.merge(sol2);
-    //TEST SET
 	
 	delete[] Q;
 	delete[] P2;	

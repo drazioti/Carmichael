@@ -100,6 +100,7 @@ int getmem() {
 void U_bound(mpz_class size, mpz_class &bound,int &frag){
 	
 	frag = 16;		//frag changable parameter 
+	cout <<"frag =" << frag<< endl;
 	bound = size/frag;
 	return ;
 
@@ -256,13 +257,7 @@ int intersection(mpz_class* &P,mpz_class &sizeP, mpz_class** &I, int* E, mpz_cla
 		Q[mpz_get_ui(i.get_mpz_t())] = P[mpz_get_ui(index.get_mpz_t())];
 		//cout << Q[mpz_get_ui(i.get_mpz_t())] << ", ";
 	}
-	//cout << endl;
-	//cout << "END OF Q2 " << endl;	
-	//ON THE FLY CALCULATION OF U2 ELEMENTS
         mpz_class temp=func1(Q,E,Lambda,c,2,h2);	
-	//cout << " AFTER FUNC1 " << endl;
-	//EACH ELEMENT OF U2 IS STORED IN A TEMPORARY
-	//VARIABLE TEMP AND TESTED FOR INTERSECTION
 
 	unordered_multimap<string, int*>::const_iterator got = Map.find(temp.get_str());
 	//cout << "Hashed number is : " << to_md5_f6_str(temp) << endl;
@@ -455,7 +450,7 @@ int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_clas
 			U1(P, I[0], E1, Lambda, sizeI,h1, U,begin,end);
 		}
 		
-		cout << "U1 done" << endl;
+		cout << "The first set U1, has been stored in memory" << endl;
 		cout << "Hashtable size : " << U.size() << endl;
 		
 //*********************END OF FRAGMENTATION************************************//		
