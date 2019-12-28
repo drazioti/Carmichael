@@ -27,7 +27,7 @@ void from_list_to_array(std::list<mpz_class> &source, mpz_class* &dest){
         }
 }
 
-//FUNCTION (2): CALCULATING LAMBDA
+//FUNCTION (2): CALCULATING the modulus LAMBDA
 
 void Lambda(int* Q,int* H,int r, mpz_class &Lambda){
 	
@@ -90,7 +90,9 @@ void divisors(int* P, int* H, int r,mpz_class &size, mpz_class* &divs){
         dup[0] = new int[mpz_get_ui(size.get_mpz_t())];
         dup[1] = new int[mpz_get_ui(size.get_mpz_t())];
         dup_array(P,H,r,dup);
+
         //-------------------------
+
         divs[0] = 1;
         mpz_class out_count =1;
         for (int i=0;i<r;i++){
@@ -108,7 +110,6 @@ void divisors(int* P, int* H, int r,mpz_class &size, mpz_class* &divs){
                         }
                 }
 		delete[] prev;
-
         }
 	delete[] dup[0];
 	delete[] dup[1];
@@ -233,6 +234,19 @@ void extract_number(mpz_class* &P, mpz_class** &I,mpz_class &sizeI, std::list<in
 	cout << "SET S IS COMPLETE" << endl;
 }
 
+void euler_totient(int* Q, int* H, int size, mpz_class &result)
+// L <-- Lambda
+{    
+	mpz_class exp1;
+	mpz_class exp2;
+	for(int i=0;i<size;i++){
+		exp1 =  pow(Q[i], H[i]);
+		exp2 =  pow(Q[i], H[i]-1);
+		result *= (exp1-exp2);
+	}
+	return;	
+}
+
 //--------------------------------------------------------------//
 
 int main(){
@@ -242,9 +256,9 @@ int main(){
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
 // Also there is the parameter frag //
 	
-	int r=6;		    //number of first primes
-	int hamming =15;	//the hamming weight	
-	mpz_class b =30;    //the bound
+	int r=10;		    //number of first primes
+	int hamming =9;	//the hamming weight	
+	mpz_class b =40;    //the bound
 	int H[r];
 
 	//INITIALIZING H TO ONES
@@ -253,8 +267,8 @@ int main(){
 		H[i] =1;
 	}
 
-	H[0]=8;
-	H[1]=4;
+	H[0]=12;
+	H[1]=8;
 	H[2]=4;
 	H[3]=3;
 	H[4]=2;
@@ -279,10 +293,20 @@ int main(){
 	std::list<mpz_class> P;
 	make_P_set(Q,H,r,L,P);
 	endP = clock();
+	int Psize = P.size();
 	cout << "hamming : " << hamming << endl;
-	cout << "P size is : " << P.size() << endl;
+	cout << "P size is : " << Psize << endl;
 	cout << "looking for Carmichaels with " << P.size() - hamming << " factors" << endl;
 	printf("\n");
+	mpz_class R=1;
+	euler_totient(Q,H,r,R);
+	cout << "euler_phi of Lambda is     : " << R << endl;
+
+	double LOG2 = log2( mpz_get_ui(R.get_mpz_t()) );
+	cout << "log_2 (euler_phi(Lambda) ) : " << LOG2 << endl;
+
+	double density = Psize/LOG2;
+	cout << "density of the problem : " << density << endl;
 
 //WHOLE TESTING
 	
@@ -321,6 +345,7 @@ int main(){
 	clock_t end = clock();
 //	cout << "Time elapsed (sec): " << double(end - begin)/CLOCKS_PER_SEC << endl;
 	cout << "Time elapsed (min): " << double(end - begin)/(60*CLOCKS_PER_SEC) << endl;
+	cout << "Time elapsed (hours): " << double(end - begin)/(3600*CLOCKS_PER_SEC) << endl;
 	cout << endl;
 	if(found==0)
 		cout << "The algorithm did ALL The ITERATIONS WITHOUT any SUCCESS" << endl;	
@@ -328,4 +353,3 @@ int main(){
 	delete[] P2;	
 	return 0;	
 }
-
