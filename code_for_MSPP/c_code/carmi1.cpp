@@ -235,7 +235,7 @@ void extract_number(mpz_class* &P, mpz_class** &I,mpz_class &sizeI, std::list<in
 }
 
 void euler_totient(int* Q, int* H, int size, mpz_class &result)
-// L <-- Lambda
+// we compute euler function but we know the factorization.
 {    
 	mpz_class exp1;
 	mpz_class exp2;
@@ -247,6 +247,29 @@ void euler_totient(int* Q, int* H, int size, mpz_class &result)
 	return;	
 }
 
+
+void density(int* Q, int* H, int size, int Psize, double &result1, double &density1 )
+// we compute euler function but we know the factorization.
+// We also compute the density of the Product subset problem.
+{
+	mpz_class exp1;
+	mpz_class exp2;
+	mpz_class diff;
+	double difflogsum ;
+	double difflog = 0;
+	for(int i=0;i<size;i++){
+		exp1 =  pow(Q[i], H[i]);
+		exp2 =  pow(Q[i], H[i]-1);
+		diff = exp1 - exp2;
+		difflog = log2( mpz_get_d(diff.get_mpz_t()));
+		difflogsum +=difflog;
+	}
+	result1 = difflogsum;
+    density1 = Psize/result1;
+	return;
+}
+
+
 //--------------------------------------------------------------//
 
 int main(){
@@ -254,26 +277,26 @@ int main(){
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
-// Also there is the parameter frag //
+// Also there is the parameter frag in subset_product.cpp //
 	
 	int r=10;		    //number of first primes
 	int hamming =9;	//the hamming weight	
 	mpz_class b =40;    //the bound
 	int H[r];
 
-	//INITIALIZING H TO ONES
+	//INITIALIZING exponents H TO ONES. Which is the default value.
 	
 	for (int i=0;i<r;i++){
 		H[i] =1;
 	}
 
 	H[0]=12;
-	H[1]=8;
-	H[2]=4;
-	H[3]=3;
-	H[4]=2;
-	//H[5]=7;
-	//H[6]=5;
+	H[1]=10;
+	H[2]=10;
+	H[3]=1;
+	H[4]=1;
+	H[5]=1;
+	H[6]=1;
 	//H[7]=5;
 
 //-----------------------------------------//
@@ -289,25 +312,27 @@ int main(){
 	//cout << "Lambda done" << endl;
 	cout << "Lambda is : " << L << endl; 
 	startP = clock();
-    //DEBUG POINT(3)
+    
+    //Here we print some basic things we need to know
+
 	std::list<mpz_class> P;
 	make_P_set(Q,H,r,L,P);
 	endP = clock();
 	int Psize = P.size();
-	cout << "hamming : " << hamming << endl;
+	cout << "hamming   : " << hamming << endl;
 	cout << "P size is : " << Psize << endl;
-	cout << "looking for Carmichaels with " << P.size() - hamming << " factors" << endl;
+	cout << "looking for Carmichaels with " << Psize - hamming << " factors" << endl;
 	printf("\n");
-	mpz_class R=1;
-	euler_totient(Q,H,r,R);
-	cout << "euler_phi of Lambda is     : " << R << endl;
+//	mpz_class R=1;
+//	euler_totient(Q,H,r,R);
+//	cout << "euler_phi of Lambda is     : " << R << endl;
 
-	double LOG2 = log2( mpz_get_ui(R.get_mpz_t()) );
-	cout << "log_2 (euler_phi(Lambda) ) : " << LOG2 << endl;
-
-	double density = Psize/LOG2;
-	cout << "density of the problem : " << density << endl;
-
+    double euler_phi_log;
+    double density_of_the_problem;
+    density(Q,H,r,Psize,euler_phi_log,density_of_the_problem);
+//    cout << "log_2 (euler_phi(Lambda) ) : " << fixed << euler_phi_log<< endl;
+    cout << "density of the problem     : " << fixed << density_of_the_problem << endl;
+    printf("\n");
 //WHOLE TESTING
 	
 	unsigned long list_size = P.size();
@@ -353,3 +378,4 @@ int main(){
 	delete[] P2;	
 	return 0;	
 }
+
