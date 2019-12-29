@@ -280,8 +280,8 @@ int main(){
 // Also there is the parameter frag in subset_product.cpp //
 	
 	int r=10;		    //number of first primes
-	int hamming =9;	//the hamming weight	
-	mpz_class b =40;    //the bound
+	int hamming =5;	//the hamming weight	
+	mpz_class b =3000;    //the bound
 	int H[r];
 
 	//INITIALIZING exponents H TO ONES. Which is the default value.
@@ -290,11 +290,11 @@ int main(){
 		H[i] =1;
 	}
 
-	H[0]=12;
-	H[1]=10;
-	H[2]=10;
-	H[3]=1;
-	H[4]=1;
+	H[0]=19;
+	H[1]=5;
+	H[2]=4;
+	H[3]=3;
+	H[4]=2;
 	H[5]=1;
 	H[6]=1;
 	//H[7]=5;
