@@ -4,18 +4,20 @@
 
 [GPLv2]: https://img.shields.io/badge/license-GPLv2-lightgrey.svg
 
-Initial Author : E. Tiganourias (etiganou@csd.auth.gr)
+Initial Author 						  : E. Tiganourias (etiganou@csd.auth.gr)
+
+Refactoring (openmp and exponents)    : V. Martidis    (vamartid@yandex.com)
 
 We apply this problem to find Carmichael numbers by usinng Erdos algorithm.
 
 Applications of MSPP to cryptography see https://github.com/drazioti/NSK-birthday-attack
 
 ## Requirements
-Linux/GMP/OpenSSL
+Linux/gmp/OpenSSL/Openmp
 
 ## Compile
 ```
-g++ carmi1.cpp Combinations3.cpp -lgmpxx -lgmp -lcrypto
+g++ carmi1.cpp Combinations3.cpp -lgmpxx -lgmp -fopenmp -lcrypto
 ```
 
 ## Contribute
@@ -26,7 +28,7 @@ Contribute by using pull request to this repo.
 ## TODO
 - Add hash
 
-- Add c/c++/openmp  code for the parallel attack
+- ~~Add c/c++/openmp  code for the parallel attack~~
 
 ## Issues
 
