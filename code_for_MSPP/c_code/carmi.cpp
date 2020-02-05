@@ -1,4 +1,4 @@
-// $g++ --std=c++11 carmi.cpp Combinations.cpp -lgmpxx -lgmp -lcrypto
+// $g++ --std=c++11 carmi.cpp Combinations3.cpp -lgmpxx -lgmp -fopenmp -lcrypto
 // $nohup ./a.out > script.out 2>&1 &
 
 #include <omp.h>
@@ -303,8 +303,8 @@ int main(){
 // Also there is the parameter frag in subset_product.cpp //
 	
 	int r=9;		    //number of first primes
-	int hamming =17;	//the hamming weight	
-	mpz_class b =30;    //the bound
+	int hamming =18;	//the hamming weight	
+	mpz_class b =32;    //the bound
 	int H[r];
 
 	//INITIALIZING exponents H TO ONES. Which is the default value.
@@ -313,13 +313,13 @@ int main(){
 		H[i] =1;
 	}
 
-	H[0]=5;
-	H[1]=4;
-	H[2]=3;
-	H[3]=2;
-	//H[4]=2;
-	//H[5]=1;
-	//H[6]=1;
+	H[0]=19;
+	H[1]=5;
+	H[2]=4;
+	H[3]=3;
+	H[4]=2;
+	H[5]=2;
+	H[6]=1;
 	//H[7]=5;
 
 //-----------------------------------------//
