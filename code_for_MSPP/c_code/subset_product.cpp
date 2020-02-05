@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <inttypes.h>
+#include <omp.h>
 using namespace std;
 
 
@@ -94,12 +95,18 @@ int getmem() {
 
 }
 
+unsigned long long mpz_2_ull(mpz_class z){
+	unsigned long long result=0;
+	mpz_export(&result,0,-1,sizeof result,0,0,z.get_mpz_t());
+	return result;
+}
+
 //FUNCTION (1.3): MAKING BOUND TO DIVIDE HASHMAP
 //NEEDS DEVELOPMENT to calcuate on Runtime optimal bound
 
 void U_bound(mpz_class size, mpz_class &bound,int &frag){
 	
-	frag = 4;		//frag changable parameter 
+	frag = 1;		//frag changable parameter 
 	cout <<"frag = " << frag<< endl;
 	bound = size/frag;
 	return ;
@@ -195,22 +202,39 @@ mpz_class func1(mpz_class* &P, int* E, mpz_class &Lambda, mpz_class &c, int flag
 //FUNCTION (5): CODE FOR "func2"
 
 void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, unordered_multimap <string,int*> &Map, mpz_class &sizeI, int h1, mpz_class &begin, mpz_class &end){
-	//cout <<"Entered func2\n";
-	//cout << "Number of rounds or sizeE : " << sizeE << endl;
-	for (mpz_class i=begin;i<end;i++){
-		mpz_class temp=func1(P,E[mpz_get_ui(i.get_mpz_t())],Lambda,c,flag,h1);
-														
-		std::pair<string, int*> mypair (temp.get_str(), E[i.get_ui()]);	//CHANGE IN ASSIGNING VALUES
-		Map.insert(mypair);							//DUE TO MULTIMAP VS MAP
+	
+	unsigned long long begin_ull = mpz_2_ull(begin);
+	unsigned long long end_ull = mpz_2_ull(end);
+	double func2_time_start = omp_get_wtime();
+	#pragma omp parallel
+	#pragma omp for
+	for (unsigned long long i=begin_ull;i<end_ull;i++){
+		mpz_class temp=func1(P,E[i],Lambda,c,flag,h1);
+		//cout <<"Unhashed value: " << temp << endl;
+		//cout <<"Hash value: " << to_md5_f6_str(temp) << endl;
+		//std::pair<string, int*> mypair (to_md5_f6_str(temp), E[i]);					
+		std::pair<string, int*> mypair (temp.get_str(), E[i]);	//CHANGE IN ASSIGNING VALUES
+		#pragma omp critical
+			Map.insert(mypair);							//DUE TO MULTIMAP VS MAP
 		//Map[to_md5_f6_str(temp)] = E[mpz_get_ui(i.get_mpz_t())]; 	
 	}
-
+	double func2_time_end = omp_get_wtime();
+	cout << "Time for func2 is: " << func2_time_end - func2_time_start << " seconds" << endl;
 
 }
 
 //FUNCTION (6): FUNCTIONS FOR U1
+mpz_class get_P_element(int* &Q, unsigned int* &H, int r){
+        mpz_class p=1;
+        for (int i=0;i<r;i++){
+                int exp =  pow(Q[i], H[i]);
+                p *= exp;
+        }
+        return p+1;
+}
 
-void U1(mpz_class* &P, mpz_class* &I, int** E, mpz_class &Lambda,mpz_class &sizeI,int h1, unordered_multimap<string, int*> &Map, mpz_class &begin, mpz_class &end){
+
+void U1(int* &Q_s, int r, unsigned int** &P, mpz_class* &I, int** E, mpz_class &Lambda,mpz_class &sizeI,int h1, unordered_multimap<string, int*> &Map, mpz_class &begin, mpz_class &end){
 
 	mpz_class* Q;
 	Q = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];
@@ -219,7 +243,7 @@ void U1(mpz_class* &P, mpz_class* &I, int** E, mpz_class &Lambda,mpz_class &size
 	for (mpz_class i=0;i<sizeI;i++)
 	{
 		mpz_class index = I[mpz_get_ui(i.get_mpz_t())];
-		Q[mpz_get_ui(i.get_mpz_t())] = P[mpz_get_ui(index.get_mpz_t())];
+		Q[mpz_get_ui(i.get_mpz_t())] = get_P_element(Q_s, P[index.get_ui()], r);
 	//	cout << Q[mpz_get_ui(i.get_mpz_t())] << " " ;
 	}
 	//cout <<"."<<endl;
@@ -247,19 +271,20 @@ void sol(std::list<int*> &sol1, std::list<int*> &sol2, int* E1, int* E2, int h1,
 
 //FUNCTION (8): INTERSECTION FUNCTIONS aka HASHMAP SEARCH
 
-int intersection(mpz_class* &P,mpz_class &sizeP, mpz_class** &I, int* E, mpz_class &Lambda, mpz_class &c, mpz_class &sizeE, mpz_class &sizeI, unordered_multimap <string, int*> &Map, mpz_class &count, std::list<int*> &sol1, std::list<int*> &sol2,int h1, int h2){
+int intersection(int* &Q_s, int r, unsigned int** &P,mpz_class &sizeP, mpz_class** &I, int* E, mpz_class &Lambda, mpz_class &c, mpz_class &sizeE, mpz_class &sizeI, unordered_multimap <string, int*> &Map, mpz_class &count, std::list<int*> &sol1, std::list<int*> &sol2,int h1, int h2, double total_time){
 	mpz_class* Q;
 	Q = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];
 	//cout << "Q2 contains: ";
 	for (mpz_class i=0;i<sizeI;i++)
 	{
 		mpz_class index = I[1][mpz_get_ui(i.get_mpz_t())];
-		Q[mpz_get_ui(i.get_mpz_t())] = P[mpz_get_ui(index.get_mpz_t())];
+		Q[mpz_get_ui(i.get_mpz_t())] = get_P_element(Q_s, P[index.get_ui()], r);
 		//cout << Q[mpz_get_ui(i.get_mpz_t())] << ", ";
 	}
         mpz_class temp=func1(Q,E,Lambda,c,2,h2);	
 
 	unordered_multimap<string, int*>::const_iterator got = Map.find(temp.get_str());
+	//unordered_multimap<string, int*>::const_iterator got = Map.find(to_md5_f6_str(temp));
 	//cout << "Hashed number is : " << to_md5_f6_str(temp) << endl;
 	if (got != Map.end()){
 		cout << "Inside intersections"<<endl;		
@@ -285,8 +310,8 @@ int intersection(mpz_class* &P,mpz_class &sizeP, mpz_class** &I, int* E, mpz_cla
                	mpz_class f_count=0;
                	for (mpz_class i=0;i<sizeP;i++){
               		if (mpz_get_ui(i.get_mpz_t()) != del_set[j]){
-                      		number *= P[mpz_get_ui(i.get_mpz_t())];
-				factors[mpz_get_ui(f_count.get_mpz_t())] = P[mpz_get_ui(i.get_mpz_t())];
+                      		number *= get_P_element(Q_s, P[i.get_ui()], r);
+				factors[mpz_get_ui(f_count.get_mpz_t())] = get_P_element(Q_s, P[i.get_ui()], r);
                       		++f_count;
                        		}
              		else
@@ -306,6 +331,9 @@ int intersection(mpz_class* &P,mpz_class &sizeP, mpz_class** &I, int* E, mpz_cla
 			delete[] factors;
 			delete[] del_set;
 			delete[] Q;
+			cout << "Total program time : " << omp_get_wtime() - total_time << endl;
+			cout << "Carmichael number stored now terminating... " << endl;
+			exit(0);
 			return 1;
 			}
 		else
@@ -384,7 +412,7 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
 
 //FUNCTION(9): PRODUCT SUBSET ATTACK PHASE 1
 
-int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int*> &sol1, std::list<int*> &sol2, mpz_class &count)
+int product_attack_1(int* &Q, int r, unsigned int** &P,mpz_class &sizeP, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int*> &sol1, std::list<int*> &sol2, mpz_class &count, double total_time)
 {
 	int h1;
 	int h2;
@@ -417,8 +445,11 @@ int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_clas
 	cout << "h1 = " << h1 << endl;
 	cout << "h2 = " << h2 << endl;
 	
+	double comb_time_start = omp_get_wtime();
+	#pragma omp parallel for
 	for (unsigned long i=0;i<sizeE1.get_ui();i++){
-		std::vector<int> cmb;
+		std::vector<int> cmb;	
+		#pragma omp critical
 		cmb = c_obj1->next_combination();
 		int j=0;
 		for (std::vector<int>::iterator it = cmb.begin();it != cmb.end(); ++it)
@@ -427,6 +458,8 @@ int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_clas
 				j++;
 			}
 	}
+	double comb_time_end = omp_get_wtime();
+	cout << "Combination time: " << comb_time_end-comb_time_start << " seconds" << endl;
 	delete c_obj1;
 	//cout << "Perms done ! " << endl;
 	unordered_multimap <string, int*> U;	
@@ -442,12 +475,12 @@ int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_clas
 		mpz_class begin = counter * bound;
 		mpz_class end = (counter+1)*bound;
 		if (counter+1!=frag)
-			U1(P, I[0], E1, Lambda, sizeI,h1, U,begin,end);
+			U1(Q, r, P, I[0], E1, Lambda, sizeI,h1, U,begin,end);
 		else
 		{	
 			begin = sizeE1-bound;
 			end = sizeE1;
-			U1(P, I[0], E1, Lambda, sizeI,h1, U,begin,end);
+			U1(Q, r, P, I[0], E1, Lambda, sizeI,h1, U,begin,end);
 		}
 		
 		cout << "The first set U1, has been stored in memory" << endl;
@@ -459,29 +492,41 @@ int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_clas
 		cout << endl;	
 		//TESTING THE INSTERSECTION
 		Combinations* c_obj2;
-        	c_obj2  =new Combinations(sizeI.get_ui(),h2);
-		int inter=0;
-		for (unsigned long i=0;i<sizeE2.get_ui();i++){
-		    //cout << "Entered intersection loop" << endl;
+        	c_obj2  =new Combinations(sizeI.get_ui(),h2);	
+		unsigned long long sizeE2_ull = mpz_2_ull(sizeE2);
+		double intersection_time_start = omp_get_wtime();
+		volatile bool flag = false;
+		#pragma omp parallel for shared(flag) 
+		for (unsigned long i=0;i<sizeE2_ull;i++){
+		    	//cout << "Entered intersection loop" << endl;
 			std::vector<int> cmb;
-            cmb = c_obj2->next_combination();
-           	int j=0;
+			#pragma omp critical
+            		cmb = c_obj2->next_combination();
+           		int j=0;
 			int* temp_E = new int[h2];
                 	for (std::vector<int>::iterator it = cmb.begin();it != cmb.end(); ++it)
                         {
 				temp_E[j] = *it;
                                 j++;
                         }
-			inter = intersection(P, sizeP, I, temp_E, Lambda, c, sizeE2, sizeI, U, count,sol1,sol2,h1,h2);
-			if (inter==1)
-				break;
+			int inter=0;
+			inter = intersection(Q, r, P, sizeP, I, temp_E, Lambda, c, sizeE2, sizeI, U, count,sol1,sol2,h1,h2, total_time);
 			delete[] temp_E;
+			#pragma omp critical
+			{
+			if (inter==1){
+				flag=true;
+				//break;
+			}
+			}
         	}
 		
+		double intersection_time_end = omp_get_wtime();
+		cout << "Intersection time: " << intersection_time_end - intersection_time_start << " seconds" << endl;
 		U.clear();
 		delete c_obj2;
-		if (inter==1)
-			break;
+		//if (inter==1)
+		//	break;
 	}
 	cout << endl;
 	for (mpz_class i=0;i<sizeE1;i++)
