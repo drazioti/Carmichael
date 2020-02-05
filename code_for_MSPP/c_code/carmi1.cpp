@@ -303,7 +303,7 @@ int main(){
 // Also there is the parameter frag in subset_product.cpp //
 	
 	int r=9;		    //number of first primes
-	int hamming =18;	//the hamming weight	
+	int hamming =15;	//the hamming weight	
 	mpz_class b =32;    //the bound
 	int H[r];
 
@@ -316,9 +316,9 @@ int main(){
 	H[0]=19;
 	H[1]=5;
 	H[2]=4;
-	H[3]=3;
-	H[4]=2;
-	H[5]=2;
+	H[3]=1;
+	H[4]=1;
+	H[5]=1;
 	H[6]=1;
 	//H[7]=5;
 
