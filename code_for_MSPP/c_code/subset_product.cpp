@@ -99,7 +99,7 @@ int getmem() {
 
 void U_bound(mpz_class size, mpz_class &bound,int &frag){
 	
-	frag = 4;		//frag changable parameter 
+	frag = 1;		//frag changable parameter 
 	cout <<"frag = " << frag<< endl;
 	bound = size/frag;
 	return ;
