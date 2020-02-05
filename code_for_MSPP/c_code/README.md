@@ -5,7 +5,9 @@
 [GPLv2]: https://img.shields.io/badge/license-GPLv2-lightgrey.svg
 
 Initial Author 						  : E. Tiganourias (etiganou@csd.auth.gr)
+
 Refactoring (openmp and exponents)    : V. Martidis    (vamartid@yandex.com)
+
 We apply this problem to find Carmichael numbers by usinng Erdos algorithm.
 
 Applications of MSPP to cryptography see https://github.com/drazioti/NSK-birthday-attack
