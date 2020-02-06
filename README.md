@@ -6,15 +6,19 @@
 
 In this repository we provide some code for solving Modular Subset Product Problem.
 
-We apply this problem to find Carmichael numbers by usinng Erdos algorithm (which uses MSPP).
+We apply this problem to find Carmichael numbers by using Erdos algorithm (which uses MSPP).
 
 Applications of MSPP to cryptography see https://github.com/drazioti/NSK-birthday-attack
 
 ## The code
-We provide Sagemath code, which we used to build the tables.
+We provide Sagemath code, which we used to build all the (small instances) tables.
+
+We also provide c++ single and multi core variants. Using the single core case we managed
+to produce a Carmichael number with 19589 prime factors in a I5/16Gb Linux PC in three hours.
+
 
 ## Tables for Carmichael Numbers
-We provide tables for Carmichael numbers.
+We provide tables for Carmichael numbers in directory Tables.
 
 For instance,
 
