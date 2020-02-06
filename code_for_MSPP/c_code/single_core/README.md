@@ -26,7 +26,7 @@ Contribute by using pull request to this repo.
 ## TODO
 - Add hash
 
-- Add c/c++/openmp  code for the parallel attack
+- ~~Add c/c++/openmp  code for the parallel attack~~
 
 ## Issues
 

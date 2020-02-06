@@ -1,4 +1,4 @@
-#  C/C++ implementation of Product Subset Problem and application for finding Carmichael numbers with many primes
+#  C/C++ parallel implementation of Product Subset Problem and application for finding Carmichael numbers with many primes
 
 ![GPLv2][]
 
@@ -26,9 +26,9 @@ First fork this repository. Make the changes you want (e.g. update some tables, 
 Contribute by using pull request to this repo. 
 
 ## TODO
-- Add hash
+- make a make file
+- make an api
 
-- ~~Add c/c++/openmp  code for the parallel attack~~
 
 ## Issues
 
