@@ -45,6 +45,6 @@ Contribute by using git pull to this repo.
 
 - Add python code
 
-- Add c/c++ code
+- ~~Add c/c++ code~~
 
-- Add c/c++/openmp  code for the parallel attack
+- ~~Add c/c++/openmp  code for the parallel attack~~
