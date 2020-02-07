@@ -375,7 +375,7 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
 				delete[] del_set;
 				if(is_carmichael(number, factors, f_count) == 1){
 					cout << "!!!!!!!!FOUND INTERSECTION!!!!!!!!" <<  endl;
-					cout << "Temp and its hash: " << temp << " : " << to_md5_f6_str(temp, Q_bytes) << endl;
+					//cout << "Temp and its hash: " << temp << " : " << to_md5_f6_str(temp, Q_bytes) << endl;
 					count++;
 					sol(sol1,sol2,itr->second,E, h1, h2); 
 			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
