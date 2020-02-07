@@ -269,7 +269,6 @@ void density(int* Q, int* H, int size, int Psize, double &result1, double &densi
 	return;
 }
 
-
 //--------------------------------------------------------------//
 
 int main(){
@@ -279,9 +278,9 @@ int main(){
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
 // Also there is the parameter frag in subset_product.cpp //
 	
-	int r = 3;		    //number of first primes
-	int hamming = 9;  	//the hamming weight	
-	mpz_class b = 36;    //the bound
+	int r = 5;		    //number of first primes
+	int hamming = 11;  	//the hamming weight	
+	mpz_class b = 36;   //the bound
 	int H[r];
 
 	//INITIALIZING exponents H TO ONES. Which is the default value.
@@ -290,14 +289,14 @@ int main(){
 		H[i] =1;
 	}
 
-	H[0]=19;
-	H[1]=5;
-	H[2]=4;
-	H[3]=3;
-	H[4]=2;
-	H[5]=1;
+	H[0]=30;
+	H[1]=20;
+	H[2]=10;
+	H[3]=5;
+	H[4]=4;
+	H[5]=3;
 	H[6]=1;
-	//H[7]=5;
+    //H[7]=5;
 
 //-----------------------------------------//
 
