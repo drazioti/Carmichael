@@ -13,7 +13,15 @@ We apply this problem to find Carmichael numbers by usinng Erdos algorithm.
 Applications of MSPP to cryptography see https://github.com/drazioti/NSK-birthday-attack
 
 ## Requirements
-Linux/gmp/OpenSSL/Openmp
+Linux/gmp/OpenSSL/Openmp/args
+
+For the library args :
+```
+$git clone https://github.com/Taywee/args.git
+$cd args
+$sudo make install
+```
+
 
 ## Compile
 ```
