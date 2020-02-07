@@ -205,16 +205,23 @@ mpz_class func1(mpz_class* &P, int* E, mpz_class &Lambda, mpz_class &c, int flag
 		for (mpz_class i=0;i<size;i++) 		//for loop to calculate product
 		{
 				
-				int index = E[mpz_get_ui(i.get_mpz_t())];
+				unsigned long long index = E[mpz_get_ui(i.get_mpz_t())];
 				//cout << "INDEX IS : " << index << endl;
 				mpz_class temp;
-				if(mpz_invert(temp.get_mpz_t(), P[index].get_mpz_t(), Lambda.get_mpz_t())!=0)
+				char inverse = mpz_invert(temp.get_mpz_t(), P[index].get_mpz_t(), Lambda.get_mpz_t());
+
+				if(inverse!=0)
 				{
 					//cout << "Inverse modulo of " << P[mpz_get_ui(i.get_mpz_t())] << " is: " << temp << endl;
 					prod *= temp;	
 					mpz_mod(prod.get_mpz_t(), prod.get_mpz_t(), Lambda.get_mpz_t());
 				}
-				else{cout << "Number "<< P[mpz_get_ui(i.get_mpz_t())].get_mpz_t() << " doesnt have inverse modulo "<< Lambda << endl;
+				else{
+					
+					cout << "Number "<< P[mpz_get_ui(i.get_mpz_t())].get_mpz_t() << " doesnt have inverse modulo "<< Lambda << endl;
+					//cout << "Pointer is : " << E[mpz_get_ui(i.get_mpz_t())] << endl;
+					//cout << "Inverse value is : " << inverse << endl;
+					//raise(SIGINT);
 				}	
 	}
 	}
@@ -229,8 +236,8 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, un
 	unsigned long long begin_ull = mpz_2_ull(begin);
 	unsigned long long end_ull = mpz_2_ull(end);
 	double func2_time_start = omp_get_wtime();
-	//#pragma omp parallel
-	//#pragma omp for
+	#pragma omp parallel
+	#pragma omp for
 	for (unsigned long long i=begin_ull;i<end_ull;i++){
 		mpz_class temp=func1(P,E[i],Lambda,c,flag,h1);
 		//cout <<"Unhashed value: " << temp << endl;
@@ -238,13 +245,13 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, un
 		if (hash_flag==1)
 		{
 			std::pair<string, int*> mypair (to_md5_f6_str(temp, Q_bytes), E[i]);	//IMPLEMENTING HASH			
-	//		#pragma omp critical
+			#pragma omp critical
                         Map.insert(mypair);
 		}
 		else
 		{
 			std::pair<string, int*> mypair (temp.get_str(), E[i]);		//NON-HASH
-	//		#pragma omp critical
+			#pragma omp critical
                         Map.insert(mypair);
 		}				
 	}
@@ -257,7 +264,8 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, un
 mpz_class get_P_element(int* &Q, unsigned char* &H, int r){
         mpz_class p=1;
         for (int i=0;i<r;i++){
-                int exp =  pow(Q[i], H[i]);
+                mpz_class exp;
+		mpz_ui_pow_ui(exp.get_mpz_t(), Q[i], H[i]);
                 p *= exp;
         }
         return p+1;
@@ -373,7 +381,7 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
 			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
 // critical here is because we do not want multiple threads to write the same time to file
                			
-	//			#pragma omp critical
+				#pragma omp critical
                 		{
                  		ofstream myfile("carm_num.txt");
                     		myfile << f_count << " : [";
@@ -517,10 +525,10 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 	cout << endl << endl;
 	
 	double comb_time_start = omp_get_wtime();
-	//#pragma omp parallel for
+	#pragma omp parallel for
 	for (unsigned long i=0;i<sizeE1.get_ui();i++){
 		std::vector<int> cmb;	
-	//	#pragma omp critical
+		#pragma omp critical
 		cmb = c_obj1->next_combination();
 		int j=0;
 		for (std::vector<int>::iterator it = cmb.begin();it != cmb.end(); ++it)
@@ -566,11 +574,11 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
         	c_obj2  =new Combinations(sizeI.get_ui(),h2);	
 		unsigned long long sizeE2_ull = mpz_2_ull(sizeE2);
 		double intersection_time_start = omp_get_wtime();
-	//	#pragma omp parallel for
+		#pragma omp parallel for
 		for (unsigned long i=0;i<sizeE2_ull;i++){
 		    	//cout << "Entered intersection loop" << endl;
 			std::vector<int> cmb;
-	//		#pragma omp critical
+			#pragma omp critical
             		cmb = c_obj2->next_combination();
            		int j=0;
 			int* temp_E = new int[h2];
