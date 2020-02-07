@@ -6,7 +6,7 @@
 
 Initial Author 						  : E. Tiganourias (etiganou@csd.auth.gr)
 
-Refactoring (openmp and exponents)    : V. Martidis    (vamartid@yandex.com)
+Refactoring (openmp,exponents,args)    : V. Martidis    (vamartid@yandex.com)
 
 We apply this problem to find Carmichael numbers by usinng Erdos algorithm.
 
@@ -32,13 +32,16 @@ g++ carmi.cpp Combinations.cpp -lgmpxx -lgmp -fopenmp -lcrypto
 ./a.out L --ham 15 -b 32 -f 1
 ```
 
-Where -b is the cardinality of the sets I_1 and I_2
+Where      
+          
 
-	  -f is the fragmentation parameter
+	   -b is the cardinality of the sets I_1 and I_2
+	   
+	   -f is the fragmentation parameter
 
 	  --ham is the local hamming weight (we choose h1,h2 such that h1+h2=ham)
 
-	  L is written in the form a1 a2 ... ar where aj are the expoents for construction Lambda
+	    L is written in the form a1 a2 ... ar where aj are the expoents for construction Lambda
 
 E.g.
 ```
