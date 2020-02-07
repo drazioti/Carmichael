@@ -1,4 +1,4 @@
-// $g++ --std=c++11 carmi.cpp Combinations3.cpp -lgmpxx -lgmp -fopenmp -lcrypto
+// $g++ --std=c++11 carmi.cpp Combinations.cpp -lgmpxx -lgmp -fopenmp -lcrypto
 // $nohup ./a.out > script.out 2>&1 &
 
 #include <omp.h>
@@ -19,10 +19,10 @@ using namespace std;
 
 //BASIC TEMPORARY UTILITY
 
-void from_list_to_array(std::list<unsigned int*> &source, unsigned int** &dest, int r){
+void from_list_to_array(std::list<unsigned char*> &source, unsigned char** &dest, int r){
 	unsigned long j=0;
-	for(std::list<unsigned int*>::iterator it=source.begin();it != source.end(); ++it){
-		for (unsigned long i=0;i<r;i++) 
+	for(std::list<unsigned char*>::iterator it=source.begin();it != source.end(); ++it){
+		for (unsigned char i=0;i<r;i++) 
 			dest[j][i] = *(*it+i);
 		j++;
         }
@@ -83,7 +83,7 @@ void multiply_list(int* H,int r, mpz_class &result){
 	return;
 }
 
-void divisors(int* P, int* H, int r,mpz_class &size, unsigned int** &divrep){
+void divisors(int* P, int* H, int r,mpz_class &size, unsigned char** &divrep){
 		// size to ull
 		unsigned long long size_ull=mpz_2_ull(size);
 
@@ -100,10 +100,10 @@ void divisors(int* P, int* H, int r,mpz_class &size, unsigned int** &divrep){
         
 		// create divisor array with "size" rows and "r" columns
 		// unsigned int** divrep; 			// init pointer
-		divrep = new unsigned int*[r];	// allocate columns
+		divrep = new unsigned char*[r];	// allocate columns
 		for(int i=0;i<r;i++){
 			// for each column allocate "size" rows
-			divrep[i] = new unsigned int[size_ull];
+			divrep[i] = new unsigned char[size_ull];
 		}
 		// in divrep array has "size" elements
 		// each element is represented by a row of "r" values
@@ -141,10 +141,10 @@ void divisors(int* P, int* H, int r,mpz_class &size, unsigned int** &divrep){
 	delete[] dup;
 }
 
-void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<unsigned int*> &P){
+void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<unsigned char*> &P){
     mpz_class size_d=1; 
 	multiply_list(H,r,size_d);
-        unsigned int** divs;			// init pointer (divs is divrep now)
+        unsigned char** divs;			// init pointer (divs is divrep now)
         divisors(Q, H, r, size_d, divs);
 		unsigned long long size_d_ull = mpz_2_ull(size_d);
 		// cout << " SIZE OF P SET " << size_d_ull << " " << size << endl;
@@ -156,7 +156,7 @@ void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<unsigned int*>
 			}
 			num+=1; // increase the number to be odd 
 			if (mpz_probab_prime_p(num.get_mpz_t(), 5) !=0 && Lambda%num!=0 && num<Lambda){
-				unsigned int* numrep = new unsigned int[r];
+				unsigned char* numrep = new unsigned char[r];
 				for(int k=0;k<r;k++){
 					numrep[k]=divs[k][i];
 				}
@@ -174,7 +174,7 @@ int is_carmichael(mpz_class &n, mpz_class* &factors, mpz_class &sizef);
 
 //FUNCTION(6): MAKE T_SET
 
-int T_set(int* Q, int r,unsigned int** &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mpz_class &sizeI,int local_hamming_weight, double total_time){
+int T_set(int* Q, int r,unsigned char** &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mpz_class &sizeI,int local_hamming_weight, double total_time, int frag){
 	mpz_class b=1;
 	for (unsigned long long i=0;i<sizeP.get_ui();i++)
 	{
@@ -184,7 +184,7 @@ int T_set(int* Q, int r,unsigned int** &P, mpz_class &sizeP, mpz_class &Lambda, 
 	mpz_class count=0;
 	std::list<int*> sol1;
 	std::list<int*> sol2;
-	product_attack_1(Q, r, P,sizeP,Lambda, b, I, local_hamming_weight,sizeI, sol1, sol2, count, total_time);
+	product_attack_1(Q, r, P,sizeP,Lambda, b, I, local_hamming_weight,sizeI, sol1, sol2, count, total_time,frag);
 	
 	cout << "T set product attack finished " << endl;	
 	if(sol1.begin() != sol1.end() && sol2.begin() != sol2.end())
@@ -300,11 +300,10 @@ int main(){
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
-// Also there is the parameter frag in subset_product.cpp //
-	
-	int r=3;		    //number of first primes
-	int hamming =11;	//the hamming weight	
-	mpz_class b =38;    //the bound
+	int frag = 1;   
+	int r=5;		    //number of first primes
+	int hamming =15;	//the hamming weight	
+	mpz_class b =32;    //the bound
 	int H[r];
 	
 	//INITIALIZING exponents H TO ONES. Which is the default value.
@@ -325,8 +324,7 @@ int main(){
 //-----------------------------------------//
 
 //START DEBUGGING
-
-	int* Q;
+    int* Q;
     	Q = new int[r];
 
 	set_Q(r, Q);
@@ -335,7 +333,7 @@ int main(){
     
     //Here we print some basic things we need to know
 
-	std::list<unsigned int*> P;
+	std::list<unsigned char*> P;
 	make_P_set(Q,H,r,L,P);
 
 	int Psize = P.size();
@@ -356,10 +354,10 @@ int main(){
 //WHOLE TESTING
 	
 	unsigned long list_size = P.size();
-	unsigned int** P2;
-	P2 = new unsigned int*[list_size];
+	unsigned char** P2;
+	P2 = new unsigned char*[list_size];
 	for (unsigned long i=0;i<list_size;i++)
-		P2[i] = new unsigned int[r];
+		P2[i] = new unsigned char[r];
 	from_list_to_array(P, P2,r);
 
 //GENERATING I set
@@ -385,7 +383,7 @@ int main(){
 		
 		double total_time = omp_get_wtime();		//TOTAL TIMER
 
-		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time);
+		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time,frag);
 		delete[] I[0];
 		delete[] I[1];
 		delete[] I;

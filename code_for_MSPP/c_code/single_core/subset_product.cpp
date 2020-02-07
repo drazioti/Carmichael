@@ -99,7 +99,7 @@ int getmem() {
 
 void U_bound(mpz_class size, mpz_class &bound,int &frag){
 	
-	frag = 1;		//frag changable parameter 
+// 	frag = 1;		//frag changable parameter 
 	cout <<"frag = " << frag<< endl;
 	bound = size/frag;
 	return ;
@@ -304,7 +304,7 @@ int intersection(mpz_class* &P,mpz_class &sizeP, mpz_class** &I, int* E, mpz_cla
 				myfile << factors[f] <<", ";
 			myfile <<"]";
 			myfile <<"\n";
-
+            myfile.close();
 			delete[] factors;
 			delete[] del_set;
 			delete[] Q;
@@ -387,7 +387,7 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
 
 //FUNCTION(9): PRODUCT SUBSET ATTACK PHASE 1
 
-int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int*> &sol1, std::list<int*> &sol2, mpz_class &count)
+int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int*> &sol1, std::list<int*> &sol2, mpz_class &count, int frag)
 {
 	int h1;
 	int h2;
@@ -437,7 +437,7 @@ int product_attack_1(mpz_class* &P,mpz_class &sizeP, mpz_class &Lambda, mpz_clas
 //	cout <<endl;
 //MAKING SLICED U1	
 	mpz_class bound;
-	int frag;
+    
 	U_bound(sizeE1,bound,frag);
 	int counter=0;
 	
