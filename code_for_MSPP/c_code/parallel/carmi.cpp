@@ -302,9 +302,9 @@ int main(){
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
 // Also there is the parameter frag in subset_product.cpp //
 	
-	int r=4;		    //number of first primes
+	int r=3;		    //number of first primes
 	int hamming =11;	//the hamming weight	
-	mpz_class b =32;    //the bound
+	mpz_class b =38;    //the bound
 	int H[r];
 	
 	//INITIALIZING exponents H TO ONES. Which is the default value.
@@ -313,7 +313,7 @@ int main(){
 		H[i] =1;
 	}
 
-	H[0]=19;
+	H[0]=20;
 	H[1]=5;
 	H[2]=4;
 	H[3]=1;
