@@ -107,10 +107,8 @@ unsigned long long mpz_2_ull(mpz_class z){
 void U_bound(mpz_class size, mpz_class &bound,int frag){
 	
 	//frag = 1;		//frag changable parameter 
-	cout <<"frag = " << frag<< endl;
 	bound = size/frag;
 	return ;
-
 }
 
 //FUNCTION (2): MD5 HASH FUNCTION FOR MPZ_CLASS OBJECTS
@@ -323,7 +321,7 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
 			count++;
 			sol(sol1,sol2,got->second,E, h1, h2); 
 			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
-// critical here is because we do not want multiple threads to write the same time to file
+            // critical here is because we do not want multiple threads to write the same time to file
                 #pragma omp critical
                 {
                     ofstream myfile("carm_num.txt");
@@ -548,3 +546,4 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 	return 0;	
 	
 }
+

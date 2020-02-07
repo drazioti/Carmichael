@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <ctime>
 #include <fstream>
+#include <args.hxx>// argument lib args by Taywee
 using namespace std;
 
 //BASIC TEMPORARY UTILITY
@@ -295,34 +296,72 @@ void density(int* Q, int* H, int size, int Psize, double &result1, double &densi
 
 //--------------------------------------------------------------//
 
-int main(){
+int main(int argc, char **argv){
 	clock_t startP, endP;
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
-	int frag = 1;   
-	int r=5;		    //number of first primes
-	int hamming =15;	//the hamming weight	
-	mpz_class b =32;    //the bound
-	int H[r];
-	
-	//INITIALIZING exponents H TO ONES. Which is the default value.
-	
-	for (int i=0;i<r;i++){
-		H[i] =1;
-	}
 
-	H[0]=20;
-	H[1]=5;
-	H[2]=4;
-	H[3]=1;
-	H[4]=1;
-	H[5]=1;
-	H[6]=1;
-	//H[7]=5;
-
+	//declare Argument Parser
+    args::ArgumentParser parser("This is an implementation of a propability attack\n to the Subsect Product Problem for the generation of Carmichael numbers.", "Make sure to place arguments right.");
+    args::Group exponents_group(parser, "Exponents", args::Group::Validators::All);
+	args::Group attack_group(parser, "Attack Values", args::Group::Validators::All);
+    args::Group help_group(parser, "Help:", args::Group::Validators::DontCare);
+    
 //-----------------------------------------//
+// args::ValueFlag<int> frag(exponents_group,"integer > 0", "Number of first primes",{'r',"firstprimes"});
+args::PositionalList<int> Harray(exponents_group,"integers","List of 'r' exponets");//{'e',"exponents"}
+args::ValueFlag<int> hammingWeight(attack_group,"integer", "Hamming weight",{"ham","hamming"});
+args::ValueFlag<int> bound(attack_group,"integer", "Bound",{'b',"bound"});
+args::ValueFlag<int> fragmentationSubsets(attack_group,"integer > 0", "Subsets of the set stored in memory",{'f',"fragmentation"});
+args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
+// Manage arguments
+    try
+    {
+        parser.ParseCLI(argc, argv);
+    }
+    catch (const args::Completion& e)
+    {
+        std::cout << e.what();
+        return 0;
+    }
+    catch (const args::Help&)
+    {
+        std::cout << parser;
+        return 0;
+    }
+    catch (const args::ParseError& e)
+    {
+        std::cerr << e.what() << std::endl;
+        std::cerr << parser;
+        return 1;
+    }
+    catch (args::ValidationError e)
+    {
+        std::cerr << e.what() << std::endl;
+        std::cerr << parser;
+        return 1;
+    }
 
+	// SETTING VARS FROM ARGS
+	int r = args::get(Harray).size(); // exponent array size example 5
+	int H[r]; // exponent array example 20 5 4 1 1
+	for (int i=0;i<r;i++){
+		H[i] =args::get(Harray)[i];
+	}
+	
+	mpz_class b = args::get(bound); // bound example 32
+	int fragmentation = args::get(fragmentationSubsets); // frag vallue
+	int hamming = args::get(hammingWeight); // hamming example 15
+
+	cout << "H values : ";
+	for(int i=0;i<r;i++){
+		cout << H[i] << " ";
+	}cout<<endl;
+
+	cout<<"Bound : "<<b<<endl;
+	cout<<"Fragmentation : "<<fragmentation<<endl;
+	
 //START DEBUGGING
     int* Q;
     	Q = new int[r];
@@ -383,7 +422,7 @@ int main(){
 		
 		double total_time = omp_get_wtime();		//TOTAL TIMER
 
-		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time,frag);
+		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time,fragmentation);
 		delete[] I[0];
 		delete[] I[1];
 		delete[] I;
