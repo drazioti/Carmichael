@@ -272,7 +272,6 @@ void density(int* Q, int* H, int size, int Psize, double &result1, double &densi
 }
 
 
-=======
 //--------------------------------------------------------------//
 
 int main(){
@@ -281,9 +280,9 @@ int main(){
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
   int frag=1;	
-	int r = 3;		    //number of first primes
-	int hamming = 9;  	//the hamming weight	
-	mpz_class b = 36;    //the bound
+	int r = 5;		    //number of first primes
+	int hamming = 15;  	//the hamming weight	
+	mpz_class b = 32;    //the bound
 	int H[r];
 
 	//INITIALIZING exponents H TO ONES. Which is the default value.
@@ -292,10 +291,10 @@ int main(){
 		H[i] =1;
 	}
 
-  H[0]=19;
-	H[1]=5;
-	H[2]=4;
-	H[3]=3;
+    H[0]=29;
+	H[1]=20;
+	H[2]=19;
+	H[3]=5;
 	H[4]=2;
 	H[5]=1;
 	H[6]=1;
