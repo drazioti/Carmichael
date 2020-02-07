@@ -324,18 +324,20 @@ int intersection(int* &Q_s, int r, unsigned int** &P,mpz_class &sizeP, mpz_class
 			sol(sol1,sol2,got->second,E, h1, h2); 
 			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
 			ofstream myfile("carm_num.txt");
+			myfile <<"\n\n";
 			myfile << f_count << " : [";
 			for (unsigned long f=0;f<f_count;f++)
 				myfile << factors[f] <<", ";
 			myfile <<"]";
-			myfile <<"\n";
+			myfile <<"\n\n";
 
 			delete[] factors;
 			delete[] del_set;
 			delete[] Q;
 			cout << "Total program time : " << omp_get_wtime() - total_time << endl;
 			cout << "Carmichael number stored now terminating... " << endl;
-			exit(0);
+			myfile.close();
+			//exit(0);
 			return 1;
 			}
 		else
@@ -544,4 +546,3 @@ int product_attack_1(int* &Q, int r, unsigned int** &P,mpz_class &sizeP, mpz_cla
 	return 0;	
 	
 }
-
