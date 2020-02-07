@@ -224,7 +224,7 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, un
 }
 
 //FUNCTION (6): FUNCTIONS FOR U1
-mpz_class get_P_element(int* &Q, unsigned int* &H, int r){
+mpz_class get_P_element(int* &Q, unsigned char* &H, int r){
         mpz_class p=1;
         for (int i=0;i<r;i++){
                 int exp =  pow(Q[i], H[i]);
@@ -234,7 +234,7 @@ mpz_class get_P_element(int* &Q, unsigned int* &H, int r){
 }
 
 
-void U1(int* &Q_s, int r, unsigned int** &P, mpz_class* &I, int** E, mpz_class &Lambda,mpz_class &sizeI,int h1, unordered_multimap<string, int*> &Map, mpz_class &begin, mpz_class &end){
+void U1(int* &Q_s, int r, unsigned char** &P, mpz_class* &I, int** E, mpz_class &Lambda,mpz_class &sizeI,int h1, unordered_multimap<string, int*> &Map, mpz_class &begin, mpz_class &end){
 
 	mpz_class* Q;
 	Q = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];
@@ -271,7 +271,7 @@ void sol(std::list<int*> &sol1, std::list<int*> &sol2, int* E1, int* E2, int h1,
 
 //FUNCTION (8): INTERSECTION FUNCTIONS aka HASHMAP SEARCH
 
-int intersection(int* &Q_s, int r, unsigned int** &P,mpz_class &sizeP, mpz_class** &I, int* E, mpz_class &Lambda, mpz_class &c, mpz_class &sizeE, mpz_class &sizeI, unordered_multimap <string, int*> &Map, mpz_class &count, std::list<int*> &sol1, std::list<int*> &sol2,int h1, int h2, double total_time){
+int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_class** &I, int* E, mpz_class &Lambda, mpz_class &c, mpz_class &sizeE, mpz_class &sizeI, unordered_multimap <string, int*> &Map, mpz_class &count, std::list<int*> &sol1, std::list<int*> &sol2,int h1, int h2, double total_time){
 	mpz_class* Q;
 	Q = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];
 	//cout << "Q2 contains: ";
@@ -418,7 +418,7 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
 
 //FUNCTION(9): PRODUCT SUBSET ATTACK PHASE 1
 
-int product_attack_1(int* &Q, int r, unsigned int** &P,mpz_class &sizeP, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int*> &sol1, std::list<int*> &sol2, mpz_class &count, double total_time, int frag)
+int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int*> &sol1, std::list<int*> &sol2, mpz_class &count, double total_time, int frag)
 {
 	int h1;
 	int h2;
