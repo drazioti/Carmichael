@@ -22,10 +22,27 @@ $cd args
 $sudo make install
 ```
 
-
 ## Compile
 ```
 g++ carmi.cpp Combinations.cpp -lgmpxx -lgmp -fopenmp -lcrypto
+```
+
+## Run
+```
+./a.out L --ham 15 -b 32 -f 1
+```
+
+Where -b is the cardinality of the sets I_1 and I_2
+
+	  -f is the fragmentation parameter
+
+	  --ham is the local hamming weight (we choose h1,h2 such that h1+h2=ham)
+
+	  L is written in the form a1 a2 ... ar where aj are the expoents for construction Lambda
+
+E.g.
+```
+./a.out 20 5 4 1 1 --ham 15 -b 32 -f 1
 ```
 
 ## Contribute
@@ -36,7 +53,6 @@ Contribute by using pull request to this repo.
 ## TODO
 - make a make file
 - make an api
-
 
 ## Issues
 
