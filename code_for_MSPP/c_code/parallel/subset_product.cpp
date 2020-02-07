@@ -323,22 +323,25 @@ int intersection(int* &Q_s, int r, unsigned int** &P,mpz_class &sizeP, mpz_class
 			count++;
 			sol(sol1,sol2,got->second,E, h1, h2); 
 			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
-			ofstream myfile("carm_num.txt");
-			myfile <<"\n\n";
-			myfile << f_count << " : [";
-			for (unsigned long f=0;f<f_count;f++)
-				myfile << factors[f] <<", ";
-			myfile <<"]";
-			myfile <<"\n\n";
 
-			delete[] factors;
-			delete[] del_set;
-			delete[] Q;
-			cout << "Total program time : " << omp_get_wtime() - total_time << endl;
-			cout << "Carmichael number stored now terminating... " << endl;
-			myfile.close();
-			//exit(0);
-			return 1;
+            // critical here is because we do not want multiple threads to write the same time to file
+            #pragma omp critical
+            {
+                ofstream myfile("carm_num.txt");
+                myfile << f_count << " : [";
+                for (unsigned long f=0;f<f_count;f++)
+                    myfile << factors[f] <<", ";
+                myfile <<"]";
+                myfile <<"\n";
+                myfile.close();
+                delete[] factors;
+                delete[] del_set;
+                delete[] Q;
+                cout << "Total program time : " << omp_get_wtime() - total_time << endl;
+                cout << "Carmichael number stored now terminating... " << endl;
+                exit(0);
+            }
+            return 1;
 			}
 		else
 			cout << "Found a collision" << endl;
