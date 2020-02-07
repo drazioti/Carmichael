@@ -323,7 +323,7 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
 			count++;
 			sol(sol1,sol2,got->second,E, h1, h2); 
 			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
-            // critical here is because we do not want multiple threads to write the same time to file
+// critical here is because we do not want multiple threads to write the same time to file
                 #pragma omp critical
                 {
                     ofstream myfile("carm_num.txt");
@@ -548,4 +548,3 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 	return 0;	
 	
 }
-

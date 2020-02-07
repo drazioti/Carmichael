@@ -1,4 +1,5 @@
 // $g++ --std=c++11 carmi.cpp Combinations.cpp -lgmpxx -lgmp -lcrypto
+
 // $nohup ./a.out > script.out 2>&1 &
 
 #include <omp.h>
@@ -151,7 +152,7 @@ int is_carmichael(mpz_class &n, mpz_class* &factors, mpz_class &sizef);
 
 //FUNCTION(6): MAKE T_SET
 
-int T_set(mpz_class* &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mpz_class &sizeI,int local_hamming_weight, int frag){
+  int T_set(mpz_class* &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mpz_class &sizeI,int local_hamming_weight, int frag){
 	mpz_class b=1;
 	for (mpz_class i=0;i<sizeP;i++)
 	{
@@ -161,6 +162,7 @@ int T_set(mpz_class* &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mp
 	mpz_class count=0;
 	std::list<int*> sol1;
 	std::list<int*> sol2;
+    
 	product_attack_1(P,sizeP,Lambda, b, I, local_hamming_weight,sizeI, sol1, sol2, count,frag);
 	
 	cout << "T set product attack finished " << endl;	
@@ -270,6 +272,7 @@ void density(int* Q, int* H, int size, int Psize, double &result1, double &densi
 }
 
 
+=======
 //--------------------------------------------------------------//
 
 int main(){
@@ -277,8 +280,7 @@ int main(){
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
-    int frag=1;
-	
+  int frag=1;	
 	int r = 3;		    //number of first primes
 	int hamming = 9;  	//the hamming weight	
 	mpz_class b = 36;    //the bound
@@ -290,7 +292,7 @@ int main(){
 		H[i] =1;
 	}
 
-	H[0]=19;
+  H[0]=19;
 	H[1]=5;
 	H[2]=4;
 	H[3]=3;
@@ -298,7 +300,6 @@ int main(){
 	H[5]=1;
 	H[6]=1;
 	//H[7]=5;
-
 //-----------------------------------------//
 
 //START DEBUGGING
@@ -361,7 +362,7 @@ int main(){
 		//SO WE NEED TO EXTRACT THESE NUMBERS AND CHECK IF THEY 
 		//ARE INDEED CARMICHAEL
 		found = T_set(P2, n, L, I, b, hamming,frag);
-		delete[] I[0];
+	  delete[] I[0];
 		delete[] I[1];
 		delete[] I;
 		if (found==1)

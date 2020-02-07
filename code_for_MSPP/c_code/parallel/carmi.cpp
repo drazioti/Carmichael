@@ -300,9 +300,7 @@ int main(){
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
-
-	int frag = 1;
-    
+	int frag = 1;   
 	int r=5;		    //number of first primes
 	int hamming =15;	//the hamming weight	
 	mpz_class b =32;    //the bound
@@ -314,7 +312,7 @@ int main(){
 		H[i] =1;
 	}
 
-	H[0]=19;
+	H[0]=20;
 	H[1]=5;
 	H[2]=4;
 	H[3]=1;
