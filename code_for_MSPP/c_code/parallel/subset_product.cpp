@@ -104,9 +104,9 @@ unsigned long long mpz_2_ull(mpz_class z){
 //FUNCTION (1.3): MAKING BOUND TO DIVIDE HASHMAP
 //NEEDS DEVELOPMENT to calcuate on Runtime optimal bound
 
-void U_bound(mpz_class size, mpz_class &bound,int &frag){
+void U_bound(mpz_class size, mpz_class &bound,int frag){
 	
-	frag = 1;		//frag changable parameter 
+	//frag = 1;		//frag changable parameter 
 	cout <<"frag = " << frag<< endl;
 	bound = size/frag;
 	return ;
@@ -323,20 +323,24 @@ int intersection(int* &Q_s, int r, unsigned int** &P,mpz_class &sizeP, mpz_class
 			count++;
 			sol(sol1,sol2,got->second,E, h1, h2); 
 			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
-			ofstream myfile("carm_num.txt");
-			myfile << f_count << " : [";
-			for (unsigned long f=0;f<f_count;f++)
-				myfile << factors[f] <<", ";
-			myfile <<"]";
-			myfile <<"\n";
-
-			delete[] factors;
-			delete[] del_set;
-			delete[] Q;
-			cout << "Total program time : " << omp_get_wtime() - total_time << endl;
-			cout << "Carmichael number stored now terminating... " << endl;
-			exit(0);
-			return 1;
+            // critical here is because we do not want multiple threads to write the same time to file
+                #pragma omp critical
+                {
+                    ofstream myfile("carm_num.txt");
+                    myfile << f_count << " : [";
+                    for (unsigned long f=0;f<f_count;f++)
+                        myfile << factors[f] <<", ";
+                    myfile <<"]";
+                    myfile <<"\n";
+                    myfile.close();
+                    delete[] factors;
+                    delete[] del_set;
+                    delete[] Q;
+                    cout << "Total program time : " << omp_get_wtime() - total_time << endl;
+                    cout << "Carmichael number stored now terminating... " << endl;
+                    exit(0);
+                }
+                return 1;
 			}
 		else
 			cout << "Found a collision" << endl;
@@ -414,7 +418,7 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
 
 //FUNCTION(9): PRODUCT SUBSET ATTACK PHASE 1
 
-int product_attack_1(int* &Q, int r, unsigned int** &P,mpz_class &sizeP, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int*> &sol1, std::list<int*> &sol2, mpz_class &count, double total_time)
+int product_attack_1(int* &Q, int r, unsigned int** &P,mpz_class &sizeP, mpz_class &Lambda, mpz_class &c, mpz_class** &I,int local_hamming_weight,mpz_class &sizeI, std::list<int*> &sol1, std::list<int*> &sol2, mpz_class &count, double total_time, int frag)
 {
 	int h1;
 	int h2;
@@ -469,7 +473,7 @@ int product_attack_1(int* &Q, int r, unsigned int** &P,mpz_class &sizeP, mpz_cla
 //	cout <<endl;
 //MAKING SLICED U1	
 	mpz_class bound;
-	int frag;
+	
 	U_bound(sizeE1,bound,frag);
 	int counter=0;
 	

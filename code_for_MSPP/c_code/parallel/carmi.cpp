@@ -1,4 +1,4 @@
-// $g++ --std=c++11 carmi.cpp Combinations3.cpp -lgmpxx -lgmp -fopenmp -lcrypto
+// $g++ --std=c++11 carmi.cpp Combinations.cpp -lgmpxx -lgmp -fopenmp -lcrypto
 // $nohup ./a.out > script.out 2>&1 &
 
 #include <omp.h>
@@ -174,7 +174,7 @@ int is_carmichael(mpz_class &n, mpz_class* &factors, mpz_class &sizef);
 
 //FUNCTION(6): MAKE T_SET
 
-int T_set(int* Q, int r,unsigned int** &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mpz_class &sizeI,int local_hamming_weight, double total_time){
+int T_set(int* Q, int r,unsigned int** &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mpz_class &sizeI,int local_hamming_weight, double total_time, int frag){
 	mpz_class b=1;
 	for (unsigned long long i=0;i<sizeP.get_ui();i++)
 	{
@@ -184,7 +184,7 @@ int T_set(int* Q, int r,unsigned int** &P, mpz_class &sizeP, mpz_class &Lambda, 
 	mpz_class count=0;
 	std::list<int*> sol1;
 	std::list<int*> sol2;
-	product_attack_1(Q, r, P,sizeP,Lambda, b, I, local_hamming_weight,sizeI, sol1, sol2, count, total_time);
+	product_attack_1(Q, r, P,sizeP,Lambda, b, I, local_hamming_weight,sizeI, sol1, sol2, count, total_time,frag);
 	
 	cout << "T set product attack finished " << endl;	
 	if(sol1.begin() != sol1.end() && sol2.begin() != sol2.end())
@@ -300,8 +300,9 @@ int main(){
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
-// Also there is the parameter frag in subset_product.cpp //
-	
+
+	int frag = 1;
+    
 	int r=5;		    //number of first primes
 	int hamming =15;	//the hamming weight	
 	mpz_class b =32;    //the bound
@@ -325,8 +326,7 @@ int main(){
 //-----------------------------------------//
 
 //START DEBUGGING
-
-	int* Q;
+    int* Q;
     	Q = new int[r];
 
 	set_Q(r, Q);
@@ -385,7 +385,7 @@ int main(){
 		
 		double total_time = omp_get_wtime();		//TOTAL TIMER
 
-		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time);
+		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time,frag);
 		delete[] I[0];
 		delete[] I[1];
 		delete[] I;
