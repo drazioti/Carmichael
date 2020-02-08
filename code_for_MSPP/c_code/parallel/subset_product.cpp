@@ -217,11 +217,12 @@ mpz_class func1(mpz_class* &P, int* E, mpz_class &Lambda, mpz_class &c, int flag
 					mpz_mod(prod.get_mpz_t(), prod.get_mpz_t(), Lambda.get_mpz_t());
 				}
 				else{
-					
-					cout << "Number "<< P[mpz_get_ui(i.get_mpz_t())].get_mpz_t() << " doesnt have inverse modulo "<< Lambda << endl;
+					cout << "Inverted is : " << temp << endl;
+					//cout << "P[index]=" << P[index].get_mpz_t() << endl;	
+					cout << "Number "<< P[index].get_mpz_t() << " doesnt have inverse modulo "<< Lambda << endl;
 					//cout << "Pointer is : " << E[mpz_get_ui(i.get_mpz_t())] << endl;
 					//cout << "Inverse value is : " << inverse << endl;
-					//raise(SIGINT);
+					raise(SIGINT);
 				}	
 	}
 	}
@@ -236,8 +237,8 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, un
 	unsigned long long begin_ull = mpz_2_ull(begin);
 	unsigned long long end_ull = mpz_2_ull(end);
 	double func2_time_start = omp_get_wtime();
-	#pragma omp parallel
-	#pragma omp for
+	//#pragma omp parallel
+	//#pragma omp for
 	for (unsigned long long i=begin_ull;i<end_ull;i++){
 		mpz_class temp=func1(P,E[i],Lambda,c,flag,h1);
 		//cout <<"Unhashed value: " << temp << endl;
@@ -245,13 +246,13 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, un
 		if (hash_flag==1)
 		{
 			std::pair<string, int*> mypair (to_md5_f6_str(temp, Q_bytes), E[i]);	//IMPLEMENTING HASH			
-			#pragma omp critical
+		//	#pragma omp critical
                         Map.insert(mypair);
 		}
 		else
 		{
 			std::pair<string, int*> mypair (temp.get_str(), E[i]);		//NON-HASH
-			#pragma omp critical
+		//	#pragma omp critical
                         Map.insert(mypair);
 		}				
 	}
@@ -285,7 +286,7 @@ void U1(int* &Q_s, int r, unsigned char** &P, mpz_class* &I, int** E, mpz_class 
 	//	cout << Q[mpz_get_ui(i.get_mpz_t())] << " " ;
 	}
 	//cout <<"."<<endl;
-	//cout << endl;
+	cout << endl;
 	mpz_class c=1;
 	//cout << "ENTERED U1\n";	
 	func2(Q,E,Lambda,c,1, Map, sizeI,h1,begin,end,hash_flag,Q_bytes);
@@ -313,12 +314,14 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
 	mpz_class* Q;
 	Q = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];
 	//cout << "Q2 contains: ";
-	for (mpz_class i=0;i<sizeI;i++)
+	unsigned long long sizeI_ull = mpz_2_ull(sizeI);
+	for (unsigned long long i=0;i<sizeI_ull;i++)
 	{
-		mpz_class index = I[1][mpz_get_ui(i.get_mpz_t())];
-		Q[mpz_get_ui(i.get_mpz_t())] = get_P_element(Q_s, P[index.get_ui()], r);
-		//cout << Q[mpz_get_ui(i.get_mpz_t())] << ", ";
+		unsigned long long index = mpz_2_ull(I[1][i]);
+		Q[i] = get_P_element(Q_s, P[index], r);
+		//cout << Q[i] << ", index: " << index <<","; 
 	}
+	//cout << endl;
         mpz_class temp=func1(Q,E,Lambda,c,2,h2);	
 	unordered_multimap<string, int*>::const_iterator got;	
 	string key;
@@ -381,7 +384,7 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
 			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
 // critical here is because we do not want multiple threads to write the same time to file
                			
-				#pragma omp critical
+	//			#pragma omp critical
                 		{
                  		ofstream myfile("carm_num.txt");
                     		myfile << f_count << " : [";
@@ -525,10 +528,10 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 	cout << endl << endl;
 	
 	double comb_time_start = omp_get_wtime();
-	#pragma omp parallel for
+	//#pragma omp parallel for
 	for (unsigned long i=0;i<sizeE1.get_ui();i++){
 		std::vector<int> cmb;	
-		#pragma omp critical
+	//	#pragma omp critical
 		cmb = c_obj1->next_combination();
 		int j=0;
 		for (std::vector<int>::iterator it = cmb.begin();it != cmb.end(); ++it)
@@ -574,11 +577,11 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
         	c_obj2  =new Combinations(sizeI.get_ui(),h2);	
 		unsigned long long sizeE2_ull = mpz_2_ull(sizeE2);
 		double intersection_time_start = omp_get_wtime();
-		#pragma omp parallel for
+	//	#pragma omp parallel for
 		for (unsigned long i=0;i<sizeE2_ull;i++){
 		    	//cout << "Entered intersection loop" << endl;
 			std::vector<int> cmb;
-			#pragma omp critical
+	//		#pragma omp critical
             		cmb = c_obj2->next_combination();
            		int j=0;
 			int* temp_E = new int[h2];
