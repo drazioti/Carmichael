@@ -12,6 +12,11 @@ We apply this problem to find Carmichael numbers by usinng Erdos algorithm.
 
 Applications of MSPP to cryptography see https://github.com/drazioti/NSK-birthday-attack
 
+## UPDATE
+
+Please, do not use this code, since it has some unsolved bugs. Instead you can use the single core implementation.
+See the issues #16 : https://github.com/drazioti/Carmichael/issues/16
+
 ## Requirements
 Linux/gmp/OpenSSL/Openmp/args
 
