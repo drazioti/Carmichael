@@ -96,16 +96,15 @@ void divisors(int* P, int* H, int r,mpz_class &size, unsigned char** &divrep){
         dup_array(P,H,r,dup);
 
         //-------------------------
-		mpz_class* divs = new mpz_class[size_ull];
+	mpz_class* divs = new mpz_class[size_ull];
         divs[0] = 1;
         
 		// create divisor array with "size" rows and "r" columns
 		// unsigned int** divrep; 			// init pointer
-		divrep = new unsigned char*[r];	// allocate columns
-		for(int i=0;i<r;i++){
-			// for each column allocate "size" rows
-			divrep[i] = new unsigned char[size_ull];
-		}
+	divrep = new unsigned char*[r];	// allocate columns
+	for(int i=0;i<r;i++){
+		// for each column allocate "size" rows
+		divrep[i] = new unsigned char[size_ull];		}
 		// in divrep array has "size" elements
 		// each element is represented by a row of "r" values
 		// each value of row is the exponent of equivalent P element
@@ -117,7 +116,7 @@ void divisors(int* P, int* H, int r,mpz_class &size, unsigned char** &divrep){
                 mpz_class* prev;
                 prev = new mpz_class[size_ull];
                 mpz_class pn = 1;
-                arrcpy(prev, divs, size);
+                arrcpy(prev, divs, size);	
                 for (int j=0;j<dup[1][i];j++){
                         pn *= dup[0][i];
                         unsigned long long k = 0;
@@ -135,8 +134,7 @@ void divisors(int* P, int* H, int r,mpz_class &size, unsigned char** &divrep){
                 }
 		delete[] prev;
         }
-
-	delete[] divs;
+	delete[] divs;	
 	delete[] dup[0];
 	delete[] dup[1];
 	delete[] dup;
@@ -164,6 +162,8 @@ void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<unsigned char*
 				P.insert(P.end(), numrep);
 			}
         }
+	for (int i=0;i<r;i++)
+		delete[] divs[i];
 	delete[] divs;
 	return;
 }
@@ -175,7 +175,7 @@ int is_carmichael(mpz_class &n, mpz_class* &factors, mpz_class &sizef);
 
 //FUNCTION(6): MAKE T_SET
 
-int T_set(int* Q, int r,unsigned char** &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mpz_class &sizeI,int local_hamming_weight, double total_time, int frag){
+int T_set(int* Q, int r,unsigned char** &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mpz_class &sizeI,int local_hamming_weight, double total_time, int frag, char Q_bytes){
 	mpz_class b=1;
 	for (unsigned long long i=0;i<sizeP.get_ui();i++)
 	{
@@ -185,7 +185,7 @@ int T_set(int* Q, int r,unsigned char** &P, mpz_class &sizeP, mpz_class &Lambda,
 	mpz_class count=0;
 	std::list<int*> sol1;
 	std::list<int*> sol2;
-	product_attack_1(Q, r, P,sizeP,Lambda, b, I, local_hamming_weight,sizeI, sol1, sol2, count, total_time,frag);
+	product_attack_1(Q, r, P,sizeP,Lambda, b, I, local_hamming_weight,sizeI, sol1, sol2, count, total_time,frag, Q_bytes);
 	
 	cout << "T set product attack finished " << endl;	
 	if(sol1.begin() != sol1.end() && sol2.begin() != sol2.end())
@@ -359,6 +359,8 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		cout << H[i] << " ";
 	}cout<<endl;
 
+	char Q_bytes = 12;				//NEEDS PASSING THROUGH ARGS
+
 	cout<<"Bound : "<<b<<endl;
 	cout<<"Fragmentation : "<<fragmentation<<endl;
 	
@@ -422,7 +424,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		
 		double total_time = omp_get_wtime();		//TOTAL TIMER
 
-		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time,fragmentation);
+		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time,fragmentation, Q_bytes);
 		delete[] I[0];
 		delete[] I[1];
 		delete[] I;
