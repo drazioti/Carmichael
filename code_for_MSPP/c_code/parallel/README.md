@@ -29,7 +29,7 @@ $sudo make install
 
 ## Compile
 ```
-g++ carmi.cpp Combinations.cpp -lgmpxx -lgmp -fopenmp -lcrypto
+g++ --std=c++11 carmi.cpp Combinations.cpp -lgmpxx -lgmp -fopenmp -lcrypto
 ```
 
 ## Run
