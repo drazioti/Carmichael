@@ -237,8 +237,8 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, un
 	unsigned long long begin_ull = mpz_2_ull(begin);
 	unsigned long long end_ull = mpz_2_ull(end);
 	double func2_time_start = omp_get_wtime();
-	//#pragma omp parallel
-	//#pragma omp for
+	#pragma omp parallel
+	#pragma omp for
 	for (unsigned long long i=begin_ull;i<end_ull;i++){
 		mpz_class temp=func1(P,E[i],Lambda,c,flag,h1);
 		//cout <<"Unhashed value: " << temp << endl;
@@ -246,13 +246,13 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, un
 		if (hash_flag==1)
 		{
 			std::pair<string, int*> mypair (to_md5_f6_str(temp, Q_bytes), E[i]);	//IMPLEMENTING HASH			
-		//	#pragma omp critical
+			#pragma omp critical
                         Map.insert(mypair);
 		}
 		else
 		{
 			std::pair<string, int*> mypair (temp.get_str(), E[i]);		//NON-HASH
-		//	#pragma omp critical
+			#pragma omp critical
                         Map.insert(mypair);
 		}				
 	}
@@ -384,7 +384,7 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
 			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
 // critical here is because we do not want multiple threads to write the same time to file
                			
-	//			#pragma omp critical
+				#pragma omp critical
                 		{
                  		ofstream myfile("carm_num.txt");
                     		myfile << f_count << " : [";
@@ -423,9 +423,9 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
 //FUNCTION (8): GENERATE I SET FUNCTION
 
 void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
-        if (b>=n){
-                cout << "bound must be smaller than I size" << endl;
-                return;
+        if (b>=n/2){
+                cout << "\n\n WRONG INPUT: bound must be smaller or equal to the half of P_set size" << endl;
+                exit(0);
         }
         mpz_class bound;
         if (flag==0){                   //bound is set to n/2
@@ -449,11 +449,13 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
                 for(mpz_class i=0;i<n;i++)
                         G[mpz_get_ui(i.get_mpz_t())] = i;
                 random_shuffle(&G[0], &G[mpz_get_ui(n.get_mpz_t())]);
+		cout << " DID RANDOM SHUFFLE" << endl;
                 for (mpz_class i=0;i<b;i++){
                         mpz_class index = i + b;
                         I[0][mpz_get_ui(i.get_mpz_t())] = G[mpz_get_ui(i.get_mpz_t())];
                         I[1][mpz_get_ui(i.get_mpz_t())] = G[mpz_get_ui(index.get_mpz_t())];
                 }
+		cout << "MADE I1 , I2" << endl;
 		delete[] G;
         }
         else{
@@ -528,10 +530,10 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 	cout << endl << endl;
 	
 	double comb_time_start = omp_get_wtime();
-	//#pragma omp parallel for
+	#pragma omp parallel for
 	for (unsigned long i=0;i<sizeE1.get_ui();i++){
 		std::vector<int> cmb;	
-	//	#pragma omp critical
+		#pragma omp critical
 		cmb = c_obj1->next_combination();
 		int j=0;
 		for (std::vector<int>::iterator it = cmb.begin();it != cmb.end(); ++it)
@@ -577,11 +579,11 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
         	c_obj2  =new Combinations(sizeI.get_ui(),h2);	
 		unsigned long long sizeE2_ull = mpz_2_ull(sizeE2);
 		double intersection_time_start = omp_get_wtime();
-	//	#pragma omp parallel for
+		#pragma omp parallel for
 		for (unsigned long i=0;i<sizeE2_ull;i++){
 		    	//cout << "Entered intersection loop" << endl;
 			std::vector<int> cmb;
-	//		#pragma omp critical
+			#pragma omp critical
             		cmb = c_obj2->next_combination();
            		int j=0;
 			int* temp_E = new int[h2];

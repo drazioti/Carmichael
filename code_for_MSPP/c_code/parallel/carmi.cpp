@@ -359,7 +359,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		cout << H[i] << " ";
 	}cout<<endl;
 
-	char Q_bytes = 12;				//NEEDS PASSING THROUGH ARGS
+	char Q_bytes = 10;				//NEEDS PASSING THROUGH ARGS
 
 	cout<<"Bound : "<<b<<endl;
 	cout<<"Fragmentation : "<<fragmentation<<endl;
@@ -412,6 +412,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 //	for(int ite=0;ite<100;ite++){ 		
 		mpz_class** I;			
 		I = new mpz_class*[2];		//RESULTS
+
 		I[0] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
 		I[1] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
 		gen_I(n,b,1, I);
@@ -423,6 +424,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		//ARE INDEED CARMICHAEL
 		
 		double total_time = omp_get_wtime();		//TOTAL TIMER
+		
 
 		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time,fragmentation, Q_bytes);
 		delete[] I[0];
