@@ -20,6 +20,7 @@ using namespace std;
 
 //BASIC TEMPORARY UTILITY
 
+
 void from_list_to_array(std::list<unsigned char*> &source, unsigned char** &dest, int r){
 	unsigned long j=0;
 	for(std::list<unsigned char*>::iterator it=source.begin();it != source.end(); ++it){
@@ -35,7 +36,7 @@ void Lambda(int* Q,int* H,int r, mpz_class &Lambda){
 	
 	mpz_class exp;
 	for (int i=0;i<r;i++){
-		exp = pow(Q[i], H[i]); 
+		mpz_ui_pow_ui(exp.get_mpz_t(),Q[i], H[i]); 
 		Lambda *= exp;
 	}
 	return;
@@ -151,6 +152,8 @@ void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<unsigned char*
 			mpz_class num = 1;
 			// create the number
 			for(int j=0;j<r;j++){
+				mpz_class temp;
+				mpz_ui_pow_ui(temp.get_mpz_t(),Q[j],divs[j][i]);
 				num = num * pow(Q[j], divs[j][i]) ;
 			}
 			num+=1; // increase the number to be odd 
@@ -346,9 +349,12 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	// SETTING VARS FROM ARGS
 	int r = args::get(Harray).size(); // exponent array size example 5
 	int H[r]; // exponent array example 20 5 4 1 1
+	//cout << " EXPONENTS: ";
 	for (int i=0;i<r;i++){
 		H[i] =args::get(Harray)[i];
+		//cout << H[i] << ", ";
 	}
+	cout << endl;
 	
 	mpz_class b = args::get(bound); // bound example 32
 	int fragmentation = args::get(fragmentationSubsets); // frag vallue
@@ -412,6 +418,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 //	for(int ite=0;ite<100;ite++){ 		
 		mpz_class** I;			
 		I = new mpz_class*[2];		//RESULTS
+
 		I[0] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
 		I[1] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
 		gen_I(n,b,1, I);
@@ -423,6 +430,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		//ARE INDEED CARMICHAEL
 		
 		double total_time = omp_get_wtime();		//TOTAL TIMER
+		
 
 		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time,fragmentation, Q_bytes);
 		delete[] I[0];
