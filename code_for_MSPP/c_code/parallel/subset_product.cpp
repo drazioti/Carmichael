@@ -23,7 +23,6 @@ using namespace std;
 
 //FUNCTIONS (1): IMPLAMENTATION OF SIMPLE USEFULL FUNCTONS FOR MPZ OBJECTS
 
-
 int chrcmp(const char chr1, const char chr2) {
 	size_t length1, length2;
 
@@ -217,11 +216,12 @@ mpz_class func1(mpz_class* &P, int* E, mpz_class &Lambda, mpz_class &c, int flag
 					mpz_mod(prod.get_mpz_t(), prod.get_mpz_t(), Lambda.get_mpz_t());
 				}
 				else{
-					
-					cout << "Number "<< P[mpz_get_ui(i.get_mpz_t())].get_mpz_t() << " doesnt have inverse modulo "<< Lambda << endl;
+					cout << "Inverted is : " << temp << endl;
+					//cout << "P[index]=" << P[index].get_mpz_t() << endl;	
+					cout << "Number "<< P[index].get_mpz_t() << " doesnt have inverse modulo "<< Lambda << endl;
 					//cout << "Pointer is : " << E[mpz_get_ui(i.get_mpz_t())] << endl;
 					//cout << "Inverse value is : " << inverse << endl;
-					//raise(SIGINT);
+					raise(SIGINT);
 				}	
 	}
 	}
@@ -285,7 +285,7 @@ void U1(int* &Q_s, int r, unsigned char** &P, mpz_class* &I, int** E, mpz_class 
 	//	cout << Q[mpz_get_ui(i.get_mpz_t())] << " " ;
 	}
 	//cout <<"."<<endl;
-	//cout << endl;
+	cout << endl;
 	mpz_class c=1;
 	//cout << "ENTERED U1\n";	
 	func2(Q,E,Lambda,c,1, Map, sizeI,h1,begin,end,hash_flag,Q_bytes);
@@ -313,12 +313,14 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
 	mpz_class* Q;
 	Q = new mpz_class[mpz_get_ui(sizeI.get_mpz_t())];
 	//cout << "Q2 contains: ";
-	for (mpz_class i=0;i<sizeI;i++)
+	unsigned long long sizeI_ull = mpz_2_ull(sizeI);
+	for (unsigned long long i=0;i<sizeI_ull;i++)
 	{
-		mpz_class index = I[1][mpz_get_ui(i.get_mpz_t())];
-		Q[mpz_get_ui(i.get_mpz_t())] = get_P_element(Q_s, P[index.get_ui()], r);
-		//cout << Q[mpz_get_ui(i.get_mpz_t())] << ", ";
+		unsigned long long index = mpz_2_ull(I[1][i]);
+		Q[i] = get_P_element(Q_s, P[index], r);
+		//cout << Q[i] << ", index: " << index <<","; 
 	}
+	//cout << endl;
         mpz_class temp=func1(Q,E,Lambda,c,2,h2);	
 	unordered_multimap<string, int*>::const_iterator got;	
 	string key;
@@ -420,9 +422,9 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
 //FUNCTION (8): GENERATE I SET FUNCTION
 
 void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
-        if (b>=n){
-                cout << "bound must be smaller than I size" << endl;
-                return;
+        if (b>=n/2){
+                cout << "bound must be smaller or equal to the half of P_set size" << endl;
+                exit(0);
         }
         mpz_class bound;
         if (flag==0){                   //bound is set to n/2
@@ -493,7 +495,7 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 		h1 = local_hamming_weight/2;
 		h2=h1;
 	}
-
+//	cout << "Probability to found solution: " << success_probability(sizeI, h1, h2);
     	mpz_class sizeE1;
 	mpz_class sizeE2;
 	comb_size(sizeI, h1, sizeE1);

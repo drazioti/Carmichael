@@ -34,7 +34,8 @@ void Lambda(int* Q,int* H,int r, mpz_class &Lambda){
 	
 	mpz_class exp;
 	for (int i=0;i<r;i++){
-		exp = pow(Q[i], H[i]); 
+		
+		mpz_ui_pow_ui(exp.get_mpz_t(),Q[i], H[i]); 
 		Lambda *= exp;
 	}
 	return;
@@ -119,16 +120,16 @@ void divisors(int* P, int* H, int r,mpz_class &size, mpz_class* &divs){
 
 void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<mpz_class> &P){
     mpz_class size_d=1; 
-	multiply_list(H,r,size_d);
-        mpz_class* divs;
-        divs = new mpz_class[mpz_get_ui(size_d.get_mpz_t())];
-        divisors(Q, H, r, size_d, divs);
-        for (mpz_class i=0;i<size_d;i++){
-                mpz_class num = divs[mpz_get_ui(i.get_mpz_t())] + 1;
-                if (mpz_probab_prime_p(num.get_mpz_t(), 5) !=0 && Lambda%num!=0 && num<Lambda){
-			P.insert(P.end(), num);
-                }
-        }
+    multiply_list(H,r,size_d);
+    mpz_class* divs;
+    divs = new mpz_class[mpz_get_ui(size_d.get_mpz_t())];
+    divisors(Q, H, r, size_d, divs);
+    for (mpz_class i=0;i<size_d;i++){
+	    mpz_class num = divs[mpz_get_ui(i.get_mpz_t())] + 1;
+	    if (mpz_probab_prime_p(num.get_mpz_t(), 5) !=0 && Lambda%num!=0 && num<Lambda){
+	    	P.insert(P.end(), num);
+	    }
+    	}
 	delete[] divs;
 	return;
 }
@@ -139,7 +140,8 @@ void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<mpz_class> &P)
 mpz_class get_P_element(int* Q, int* H, int r){
 	mpz_class p=1;
 	for (int i=0;i<r;i++){
-		int exp =  pow(Q[i], H[i]);
+		mpz_class exp;
+		mpz_ui_pow_ui(exp.get_mpz_t(),Q[i], H[i]);
 		p *= exp;
 	}
 	return p;
@@ -279,10 +281,10 @@ int main(){
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
-  int frag=1;	
-	int r = 5;		    //number of first primes
-	int hamming = 15;  	//the hamming weight	
-	mpz_class b = 32;    //the bound
+  	int frag=1;	
+  	int r = 5;		    //number of first primes
+	int hamming = 9;  	//the hamming weight	
+	mpz_class b = 40;    //the bound
 	int H[r];
 
 	//INITIALIZING exponents H TO ONES. Which is the default value.
@@ -291,13 +293,13 @@ int main(){
 		H[i] =1;
 	}
 
-    H[0]=29;
-	H[1]=20;
-	H[2]=19;
-	H[3]=5;
-	H[4]=2;
-	H[5]=1;
-	H[6]=1;
+   	H[0]=40;
+	H[1]=39;
+	H[2]=38;
+	H[3]=1;
+	H[4]=1;
+	//H[5]=1;
+	//H[6]=1;
 	//H[7]=5;
 //-----------------------------------------//
 
