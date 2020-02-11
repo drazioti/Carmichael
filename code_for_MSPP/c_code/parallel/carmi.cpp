@@ -386,7 +386,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	int Psize = P.size();
 	cout << "hamming   : " << hamming << endl;
 	cout << "P size is : " << Psize << endl;
-	cout << "looking for Carmichaels with " << Psize - hamming << " factors" << endl;
+	cout << "looking for Carmichael  numbers with " << Psize - hamming << " factors" << endl;
 	printf("\n");
 //	mpz_class R=1;
 //	euler_totient(Q,H,r,R);

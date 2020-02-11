@@ -106,7 +106,7 @@ unsigned long long mpz_2_ull(mpz_class z){
 void U_bound(mpz_class size, mpz_class &bound,int frag){
 	
 	//frag = 1;		//frag changable parameter 
-	cout <<"frag = " << frag<< endl;
+	//cout <<"fragmentation = " << frag<< endl;
 	bound = size/frag;
 	return ;
 
@@ -524,7 +524,7 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 	}
 	else
 		cout << "Hash Implementation: False" << endl;
-	cout << endl << endl;
+	
 	
 	double comb_time_start = omp_get_wtime();
 	#pragma omp parallel for
