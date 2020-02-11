@@ -348,6 +348,8 @@ int main(){
 	int found = 0;				
 	clock_t begin = clock();
 	
+	gmp_randstate_t state;
+        randomize_I(state);
 //START THE TEST
 	while(found==0){
 //	for(int ite=0;ite<100;ite++){ 		
@@ -355,7 +357,7 @@ int main(){
 		I = new mpz_class*[2];		//RESULTS
 		I[0] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
 		I[1] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
-		gen_I(n,b,1, I);
+		gen_I(n,b,1, I,state);
 		mpz_class count =0;		//THIS IS A COUNTER FOR HOW MANY INTERSECTIONS WE GET
 
 		//AT THIS STAGE WE HAVE THE COMBINATIONS IN SOL1, SOL2 THAT 

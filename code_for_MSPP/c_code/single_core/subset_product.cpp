@@ -325,7 +325,11 @@ int intersection(mpz_class* &P,mpz_class &sizeP, mpz_class** &I, int* E, mpz_cla
 
 //FUNCTION (8): GENERATE I SET FUNCTION
 
-void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
+void randomize_I(gmp_randstate_t &state)
+{
+	gmp_randinit_mt(state);
+}
+void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I, gmp_randstate_t &state){
         if (b>n/2){
                 cout << "ERROR: WRONG INPUT, B MUST BE SMALL THAN P_SIZE/2" << endl;
                 return;
@@ -361,8 +365,6 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
         }
         else{
 		unordered_map <unsigned int, unsigned int> S;
-                gmp_randstate_t state;
-                gmp_randinit_mt(state);
                 mpz_class i=0;
                 while(i<2*b)
                 {
