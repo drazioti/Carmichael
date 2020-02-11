@@ -152,9 +152,9 @@ void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<unsigned char*
 			mpz_class num = 1;
 			// create the number
 			for(int j=0;j<r;j++){
-				mpz_class temp;
-				mpz_ui_pow_ui(temp.get_mpz_t(),Q[j],divs[j][i]);
-				num = num *temp ;
+				mpz_class temp;						//THERE WAS BUG
+				mpz_ui_pow_ui(temp.get_mpz_t(),Q[j],divs[j][i]);	//DUE TO INTEGER OVERFLOW
+				num = num *temp ;					//BUG SOVLED
 			}
 			num+=1; // increase the number to be odd 
 			if (mpz_probab_prime_p(num.get_mpz_t(), 5) !=0 && Lambda%num!=0 && num<Lambda){
