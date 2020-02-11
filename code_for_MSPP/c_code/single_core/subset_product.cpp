@@ -326,8 +326,8 @@ int intersection(mpz_class* &P,mpz_class &sizeP, mpz_class** &I, int* E, mpz_cla
 //FUNCTION (8): GENERATE I SET FUNCTION
 
 void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
-        if (b>=n){
-                cout << "bound must be smaller than I size" << endl;
+        if (b>n/2){
+                cout << "ERROR: WRONG INPUT, B MUST BE SMALL THAN P_SIZE/2" << endl;
                 return;
         }
         mpz_class bound;

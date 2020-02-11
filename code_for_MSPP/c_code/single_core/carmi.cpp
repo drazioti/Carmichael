@@ -120,16 +120,16 @@ void divisors(int* P, int* H, int r,mpz_class &size, mpz_class* &divs){
 
 void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<mpz_class> &P){
     mpz_class size_d=1; 
-	multiply_list(H,r,size_d);
-        mpz_class* divs;
-        divs = new mpz_class[mpz_get_ui(size_d.get_mpz_t())];
-        divisors(Q, H, r, size_d, divs);
-        for (mpz_class i=0;i<size_d;i++){
-                mpz_class num = divs[mpz_get_ui(i.get_mpz_t())] + 1;
-                if (mpz_probab_prime_p(num.get_mpz_t(), 5) !=0 && Lambda%num!=0 && num<Lambda){
-			P.insert(P.end(), num);
-                }
-        }
+    multiply_list(H,r,size_d);
+    mpz_class* divs;
+    divs = new mpz_class[mpz_get_ui(size_d.get_mpz_t())];
+    divisors(Q, H, r, size_d, divs);
+    for (mpz_class i=0;i<size_d;i++){
+	    mpz_class num = divs[mpz_get_ui(i.get_mpz_t())] + 1;
+	    if (mpz_probab_prime_p(num.get_mpz_t(), 5) !=0 && Lambda%num!=0 && num<Lambda){
+	    	P.insert(P.end(), num);
+	    }
+    	}
 	delete[] divs;
 	return;
 }
@@ -281,10 +281,10 @@ int main(){
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
-  int frag=1;	
-	int r = 5;		    //number of first primes
-	int hamming = 15;  	//the hamming weight	
-	mpz_class b = 32;    //the bound
+  	int frag=1;	
+  	int r = 5;		    //number of first primes
+	int hamming = 9;  	//the hamming weight	
+	mpz_class b = 40;    //the bound
 	int H[r];
 
 	//INITIALIZING exponents H TO ONES. Which is the default value.
@@ -293,9 +293,9 @@ int main(){
 		H[i] =1;
 	}
 
-    H[0]=45;
-	H[1]=10;
-	H[2]=4;
+   	H[0]=40;
+	H[1]=39;
+	H[2]=38;
 	H[3]=1;
 	H[4]=1;
 	//H[5]=1;
