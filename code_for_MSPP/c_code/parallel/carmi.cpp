@@ -86,8 +86,8 @@ void multiply_list(int* H,int r, mpz_class &result){
 }
 
 void divisors(int* P, int* H, int r,mpz_class &size, unsigned char** &divrep){
-		// size to ull
-		unsigned long long size_ull=mpz_2_ull(size);
+	// size to ull
+	unsigned long long size_ull=mpz_2_ull(size);
 
         //getting the 2d array needed
         int** dup;
@@ -112,7 +112,7 @@ void divisors(int* P, int* H, int r,mpz_class &size, unsigned char** &divrep){
 		// so if P is [2,3,5] and the first row of divreps is [0,2,1]
 		// the element represented is pow(2,0)*pow(3,2)*pow(5,1) = 45
 
-		unsigned long long out_count =1;
+	unsigned long long out_count =1;
         for (int i=0;i<r;i++){
                 mpz_class* prev;
                 prev = new mpz_class[size_ull];
@@ -154,7 +154,7 @@ void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<unsigned char*
 			for(int j=0;j<r;j++){
 				mpz_class temp;
 				mpz_ui_pow_ui(temp.get_mpz_t(),Q[j],divs[j][i]);
-				num = num * pow(Q[j], divs[j][i]) ;
+				num = num *temp ;
 			}
 			num+=1; // increase the number to be odd 
 			if (mpz_probab_prime_p(num.get_mpz_t(), 5) !=0 && Lambda%num!=0 && num<Lambda){
