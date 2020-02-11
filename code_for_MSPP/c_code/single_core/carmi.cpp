@@ -34,7 +34,8 @@ void Lambda(int* Q,int* H,int r, mpz_class &Lambda){
 	
 	mpz_class exp;
 	for (int i=0;i<r;i++){
-		exp = pow(Q[i], H[i]); 
+		
+		mpz_ui_pow_ui(exp.get_mpz_t(),Q[i], H[i]); 
 		Lambda *= exp;
 	}
 	return;
@@ -139,7 +140,8 @@ void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<mpz_class> &P)
 mpz_class get_P_element(int* Q, int* H, int r){
 	mpz_class p=1;
 	for (int i=0;i<r;i++){
-		int exp =  pow(Q[i], H[i]);
+		mpz_class exp;
+		mpz_ui_pow_ui(exp.get_mpz_t(),Q[i], H[i]);
 		p *= exp;
 	}
 	return p;
@@ -291,13 +293,13 @@ int main(){
 		H[i] =1;
 	}
 
-    H[0]=29;
-	H[1]=20;
-	H[2]=19;
-	H[3]=5;
-	H[4]=2;
-	H[5]=1;
-	H[6]=1;
+    H[0]=45;
+	H[1]=10;
+	H[2]=4;
+	H[3]=1;
+	H[4]=1;
+	//H[5]=1;
+	//H[6]=1;
 	//H[7]=5;
 //-----------------------------------------//
 
