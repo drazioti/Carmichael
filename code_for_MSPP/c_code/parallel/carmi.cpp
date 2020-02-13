@@ -367,14 +367,17 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		cout << H[i] << " ";
 	}cout<<endl;
 
-	char Q_bytes = 12;				//NEEDS PASSING THROUGH ARGS
+	int Q_int = 12;
+	char Q_bytes = Q_int;				//NEEDS PASSING THROUGH ARGS
 
 	cout<<"Bound : "<<b<<endl;
 	cout<<"Fragmentation : "<<fragmentation<<endl;
+
 	
 //START DEBUGGING
     int* Q;
-    	Q = new int[r];
+    Q = new int[r];
+    cout<<"Parameter Q : "<<Q_int <<endl;
 
 	set_Q(r, Q);
 	Lambda(Q, H, r, L);
@@ -394,9 +397,9 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 //	euler_totient(Q,H,r,R);
 //	cout << "euler_phi of Lambda is     : " << R << endl;
 
-    	double euler_phi_log;
-    	double density_of_the_problem;
-    	density(Q,H,r,Psize,euler_phi_log,density_of_the_problem);
+	double euler_phi_log;
+	double density_of_the_problem;
+	density(Q,H,r,Psize,euler_phi_log,density_of_the_problem);
 //    cout << "log_2 (euler_phi(Lambda) ) : " << fixed << euler_phi_log<< endl;
     	cout << "density of the problem     : " << fixed << density_of_the_problem << endl;
     	printf("\n");
