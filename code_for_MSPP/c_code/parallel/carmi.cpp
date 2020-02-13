@@ -444,7 +444,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 			
 		gen_I(n,b,1, I, rr,seed);
 		mpz_class count =0;		//THIS IS A COUNTER FOR HOW MANY INTERSECTIONS WE GET
-		//cout << "I1[0]: " << I[0][0]<<endl;	
+		cout << "I1[0]: " << I[0][0]<<endl;	
 //I CHECKS	
 
 		//AT THIS STAGE WE HAVE THE COMBINATIONS IN SOL1, SOL2 THAT 

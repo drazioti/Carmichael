@@ -425,6 +425,7 @@ void randomize_I(gmp_randclass &rr, unsigned int seed)
 {
 	rr.seed(seed);
 	//rr.seed(time(NULL));
+	srand(seed);
 }
 void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I, gmp_randclass &rr, unsigned int seed){
         if (b>=n/2){
@@ -452,7 +453,6 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I, gmp_randclass &
                 G = new mpz_class[mpz_get_ui(n.get_mpz_t())];
                 for(mpz_class i=0;i<n;i++)
                         G[mpz_get_ui(i.get_mpz_t())] = i;
-		srand(seed);
                 random_shuffle(&G[0], &G[mpz_get_ui(n.get_mpz_t())]);
                 for (mpz_class i=0;i<b;i++){
                         mpz_class index = i + b;
