@@ -325,7 +325,12 @@ int intersection(mpz_class* &P,mpz_class &sizeP, mpz_class** &I, int* E, mpz_cla
 
 //FUNCTION (8): GENERATE I SET FUNCTION
 
-void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
+void randomize_I(gmp_randclass &rr, unsigned int seed)
+{
+	rr.seed(seed);
+	srand(seed);
+}
+void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I, gmp_randclass &rr, unsigned int seed){
         if (b>n/2){
                 cout << "ERROR: WRONG INPUT, B MUST BE SMALL THAN P_SIZE/2" << endl;
                 return;
@@ -351,6 +356,7 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
                 G = new mpz_class[mpz_get_ui(n.get_mpz_t())];
                 for(mpz_class i=0;i<n;i++)
                         G[mpz_get_ui(i.get_mpz_t())] = i;
+		//srand(seed);
                 random_shuffle(&G[0], &G[mpz_get_ui(n.get_mpz_t())]);
                 for (mpz_class i=0;i<b;i++){
                         mpz_class index = i + b;
@@ -361,13 +367,11 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
         }
         else{
 		unordered_map <unsigned int, unsigned int> S;
-                gmp_randstate_t state;
-                gmp_randinit_mt(state);
                 mpz_class i=0;
                 while(i<2*b)
                 {
                         mpz_class choice;
-                        mpz_urandomm(choice.get_mpz_t(), state, n.get_mpz_t());
+                        choice = rr.get_z_range(n);
                         unordered_map<unsigned int, unsigned int>::const_iterator got = S.find(mpz_get_ui(choice.get_mpz_t()));
                         if (got == S.end())
                         {

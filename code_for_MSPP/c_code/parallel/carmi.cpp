@@ -1,6 +1,8 @@
 // $g++ --std=c++11 carmi.cpp Combinations.cpp -lgmpxx -lgmp -fopenmp -lcrypto
 // $nohup ./a.out > script.out 2>&1 &
 
+#include <fcntl.h>
+#include <unistd.h>
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -413,16 +415,37 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	int found = 0;				
 	double begin = omp_get_wtime();
 	
+	int ite =0;
 //START THE TEST
+	int randfile = open("/dev/random", O_RDONLY);
+	unsigned int seed;
+	if (randfile>0)
+	{
+		size_t check = read(randfile, &seed, sizeof(seed));
+		cout << "seed is: " << seed << endl;
+		cout << endl;
+	}
+	else
+	{	cout << "Failed to open /dev/random" << endl;
+		exit(0);
+	}
+	gmp_randclass rr(gmp_randinit_mt);
+        randomize_I(rr,seed);			//RANDOMIZE ONCE
+	close(randfile);
 	while(found==0){
 //	for(int ite=0;ite<100;ite++){ 		
+
+//CHOOSING RANDOM I		
 		mpz_class** I;			
 		I = new mpz_class*[2];		//RESULTS
-
+		
 		I[0] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
 		I[1] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
-		gen_I(n,b,1, I);
+			
+		gen_I(n,b,1, I, rr,seed);
 		mpz_class count =0;		//THIS IS A COUNTER FOR HOW MANY INTERSECTIONS WE GET
+		cout << "I1[0]: " << I[0][0]<<endl;	
+//I CHECKS	
 
 		//AT THIS STAGE WE HAVE THE COMBINATIONS IN SOL1, SOL2 THAT 
 		//PRODUCE THE CARMICHAEL NUMBERS

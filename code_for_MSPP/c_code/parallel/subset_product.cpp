@@ -421,7 +421,13 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
 
 //FUNCTION (8): GENERATE I SET FUNCTION
 
-void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
+void randomize_I(gmp_randclass &rr, unsigned int seed)
+{
+	rr.seed(seed);
+	//rr.seed(time(NULL));
+	srand(seed);
+}
+void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I, gmp_randclass &rr, unsigned int seed){
         if (b>=n/2){
                 cout << "bound must be smaller or equal to the half of P_set size" << endl;
                 exit(0);
@@ -457,14 +463,13 @@ void gen_I(mpz_class &n, mpz_class &b, int flag, mpz_class** &I){
         }
         else{
 		unordered_map <unsigned int, unsigned int> S;
-                gmp_randstate_t state;
-                gmp_randinit_mt(state);
                 mpz_class i=0;
                 while(i<2*b)
                 {
                         mpz_class choice;
-                        mpz_urandomm(choice.get_mpz_t(), state, n.get_mpz_t());
-                        unordered_map<unsigned int, unsigned int>::const_iterator got = S.find(mpz_get_ui(choice.get_mpz_t()));
+                        //mpz_urandomm(choice.get_mpz_t(), state, n.get_mpz_t());
+                        choice = rr.get_z_range(n);
+			unordered_map<unsigned int, unsigned int>::const_iterator got = S.find(mpz_get_ui(choice.get_mpz_t()));
                         if (got == S.end())
                         {
                                 S[mpz_get_ui(i.get_mpz_t())] = mpz_get_ui(choice.get_mpz_t());

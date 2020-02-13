@@ -1,7 +1,8 @@
 // $g++ --std=c++11 carmi.cpp Combinations.cpp -lgmpxx -lgmp -lcrypto
 
 // $nohup ./a.out > script.out 2>&1 &
-
+#include <fcntl.h>
+#include <unistd.h>
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -282,8 +283,8 @@ int main(){
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
   	int frag=1;	
-  	int r = 5;		    //number of first primes
-	int hamming = 9;  	//the hamming weight	
+  	int r = 8;		    //number of first primes
+	int hamming = 8;  	//the hamming weight	
 	mpz_class b = 40;    //the bound
 	int H[r];
 
@@ -293,14 +294,14 @@ int main(){
 		H[i] =1;
 	}
 
-   	H[0]=40;
-	H[1]=39;
-	H[2]=38;
+   	H[0]=10;
+	H[1]=8;
+	H[2]=8;
 	H[3]=1;
 	H[4]=1;
-	//H[5]=1;
-	//H[6]=1;
-	//H[7]=5;
+	H[5]=1;
+	H[6]=1;
+	H[7]=5;
 //-----------------------------------------//
 
 //START DEBUGGING
@@ -348,6 +349,23 @@ int main(){
 	int found = 0;				
 	clock_t begin = clock();
 	
+	int randfile = open("/dev/random", O_RDONLY);
+	unsigned int seed;
+	if (randfile>0)
+	{
+		size_t check = read(randfile, &seed, sizeof(seed));
+		cout << "seed is : "<< seed << endl;
+		cout << endl;
+	}
+	else 
+	{
+		cout << "Failed to open /dev/random" << endl;
+		exit(0);
+	}
+
+	gmp_randclass rr(gmp_randinit_mt);
+        randomize_I(rr, seed);
+	close(randfile);
 //START THE TEST
 	while(found==0){
 //	for(int ite=0;ite<100;ite++){ 		
@@ -355,7 +373,8 @@ int main(){
 		I = new mpz_class*[2];		//RESULTS
 		I[0] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
 		I[1] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
-		gen_I(n,b,1, I);
+		gen_I(n,b,1, I,rr,seed);
+		//cout << "I1[0] : " << I[0][0] << endl;
 		mpz_class count =0;		//THIS IS A COUNTER FOR HOW MANY INTERSECTIONS WE GET
 
 		//AT THIS STAGE WE HAVE THE COMBINATIONS IN SOL1, SOL2 THAT 
