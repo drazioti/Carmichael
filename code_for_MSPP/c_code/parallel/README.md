@@ -47,6 +47,7 @@ E.g.
 ```
 ./a.out 20 5 4 1 1 --ham 15 -b 32 -f 1
 ```
+Note that you have to hard-code the parameter Q in the carmi.cpp, main().
 
 ## Contribute
 First fork this repository. Make the changes you want (e.g. update some tables, correct a bug to the code etc)
