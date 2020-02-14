@@ -1,9 +1,10 @@
 '''
 Sagemath (ver.8.1).
-Code for Modular Subset Produc Problem
+Code for Modular Subset Product Problem
 Initial author : K.A.Draziotis (2019), drazioti@gmail.com
 Licence : GPL v.2
 
+This code does not generate Carmichael numbers but you can use it to generate some
 
 ### An example for product subset problem
 iterations = 60
