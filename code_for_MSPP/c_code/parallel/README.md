@@ -12,11 +12,6 @@ We apply this problem to find Carmichael numbers by usinng Erdos algorithm.
 
 Applications of MSPP to cryptography see https://github.com/drazioti/NSK-birthday-attack
 
-## UPDATE
-
-Please, do not use this code, since it has some unsolved bugs. Instead you can use the single core implementation.
-See the issues #16 : https://github.com/drazioti/Carmichael/issues/16
-
 ## Requirements
 Linux/gmp/OpenSSL/Openmp/args
 
@@ -61,7 +56,6 @@ Contribute by using pull request to this repo.
 ## TODO
 - make a make file
 - make an api
+- Insert parameter Q to args
+- Find a Carmichael number with many prime factors!
 
-## Issues
-
-- unordered map?
