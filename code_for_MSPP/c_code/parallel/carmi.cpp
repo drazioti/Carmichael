@@ -192,7 +192,8 @@ int T_set(int* Q, int r,unsigned char** &P, mpz_class &sizeP, mpz_class &Lambda,
 	std::list<int*> sol2;
 	product_attack_1(Q, r, P,sizeP,Lambda, b, I, local_hamming_weight,sizeI, sol1, sol2, count, total_time,frag, Q_bytes);
 	
-	cout << "T set product attack finished " << endl;	
+	cout << "T set product attack finished " << endl;
+	cout << "============================= " << endl;	
 	if(sol1.begin() != sol1.end() && sol2.begin() != sol2.end())
 	{
 		cout << "Found " << count << " carmichael numbers with " << sizeP - local_hamming_weight << " factors" << endl;
@@ -367,7 +368,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		cout << H[i] << " ";
 	}cout<<endl;
 
-	int Q_int = 12;
+	int Q_int = 10;
 	char Q_bytes = Q_int;				//NEEDS PASSING THROUGH ARGS
 
 	cout<<"Bound : "<<b<<endl;
@@ -392,7 +393,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	cout << "hamming   : " << hamming << endl;
 	cout << "P size is : " << Psize << endl;
 	cout << "looking for Carmichael  numbers with " << Psize - hamming << " factors" << endl;
-	printf("\n");
+	//printf("\n");
 //	mpz_class R=1;
 //	euler_totient(Q,H,r,R);
 //	cout << "euler_phi of Lambda is     : " << R << endl;
@@ -402,7 +403,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	density(Q,H,r,Psize,euler_phi_log,density_of_the_problem);
 //    cout << "log_2 (euler_phi(Lambda) ) : " << fixed << euler_phi_log<< endl;
     	cout << "density of the problem     : " << fixed << density_of_the_problem << endl;
-    	printf("\n");
+    	//printf("\n");
 //WHOLE TESTING
 	
 	unsigned long list_size = P.size();
@@ -425,8 +426,8 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	if (randfile>0)
 	{
 		size_t check = read(randfile, &seed, sizeof(seed));
-		cout << "seed is: " << seed << endl;
-		cout << endl;
+		//cout << "seed is: " << seed << endl;
+		//cout << endl;
 	}
 	else
 	{	cout << "Failed to open /dev/random" << endl;
@@ -447,7 +448,6 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 			
 		gen_I(n,b,1, I, rr,seed);
 		mpz_class count =0;		//THIS IS A COUNTER FOR HOW MANY INTERSECTIONS WE GET
-		cout << "I1[0]: " << I[0][0]<<endl;	
 //I CHECKS	
 
 		//AT THIS STAGE WE HAVE THE COMBINATIONS IN SOL1, SOL2 THAT 
@@ -474,4 +474,3 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	delete[] P2;	
 	return 0;	
 }
-

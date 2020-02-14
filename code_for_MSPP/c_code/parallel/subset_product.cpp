@@ -256,7 +256,7 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, un
 		}				
 	}
 	double func2_time_end = omp_get_wtime();
-	cout << "Time for func2 is: " << func2_time_end - func2_time_start << " seconds" << endl;
+	//cout << "Time for func2 is: " << func2_time_end - func2_time_start << " seconds" << endl;
 
 }
 
@@ -517,15 +517,15 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 	Combinations* c_obj1;
 	c_obj1	=new Combinations(sizeI.get_ui(),h1);
 	
-	cout << "Size of I is : " << sizeI << endl;
-	cout << "h1 = " << h1 << endl;
-	cout << "h2 = " << h2 << endl;
+	//cout << "Size of I is : " << sizeI << endl;
+	//cout << "h1 = " << h1 << endl;
+	//cout << "h2 = " << h2 << endl;
 	
 	char hash_flag=0;
 	if ((Lambda.get_str().length())>Q_bytes)
 	{
 		hash_flag =1;
-		cout << "Hash Implementation: True" << endl;
+		//cout << "Hash Implementation: True" << endl;
 	}
 	else
 		cout << "Hash Implementation: False" << endl;
@@ -545,7 +545,7 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 			}
 	}
 	double comb_time_end = omp_get_wtime();
-	cout << "Combination time: " << comb_time_end-comb_time_start << " seconds" << endl;
+	//cout << "Combination time: " << comb_time_end-comb_time_start << " seconds" << endl;
 	delete c_obj1;
 	//cout << "Perms done ! " << endl;
 	unordered_multimap <string, int*> U;	
@@ -568,9 +568,8 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 			end = sizeE1;
 			U1(Q, r, P, I[0], E1, Lambda, sizeI,h1, U,begin,end, hash_flag, Q_bytes);
 		}
-		
-		cout << "The first set U1, has been stored in memory" << endl;
-		cout << "Hashtable size : " << U.size() << endl;
+		cout << "U1 stored, starting the searching phase..." << endl;
+		//cout << "Hashtable size : " << U.size() << endl;
 		
 //*********************END OF FRAGMENTATION************************************//		
 		
