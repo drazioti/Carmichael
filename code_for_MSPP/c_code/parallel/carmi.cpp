@@ -1,27 +1,8 @@
 // $g++ --std=c++11 carmi.cpp Combinations.cpp -lgmpxx -lgmp -fopenmp -lcrypto
 // $nohup ./a.out > script.out 2>&1 &
-
-#include <fcntl.h>
-#include <unistd.h>
-#include <omp.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <gmpxx.h>
-#include "iostream"	
-#include <new>
-#include <math.h>
-#include <time.h>
-#include <signal.h>
-#include "subset_product.cpp"
-#include <list>
-#include <algorithm>
-#include <ctime>
-#include <fstream>
-#include <args.hxx>// argument lib args by Taywee
-using namespace std;
+#include "carmi.h"
 
 //BASIC TEMPORARY UTILITY
-
 
 void from_list_to_array(std::list<unsigned char*> &source, unsigned char** &dest, int r){
 	unsigned long j=0;
@@ -176,8 +157,6 @@ void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<unsigned char*
 //THIS CODE ABOVE IS USED FOR THE OPTIMIZED VERSION OF STORING THE
 //THE P SET
 
-int is_carmichael(mpz_class &n, mpz_class* &factors, mpz_class &sizef);
-
 //FUNCTION(6): MAKE T_SET
 
 int T_set(int* Q, int r,unsigned char** &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mpz_class &sizeI,int local_hamming_weight, double total_time, int frag, char Q_bytes){
@@ -319,6 +298,7 @@ int main(int argc, char **argv){
 args::PositionalList<int> Harray(exponents_group,"integers","List of 'r' exponets");//{'e',"exponents"}
 args::ValueFlag<int> hammingWeight(attack_group,"integer", "Hamming weight",{"ham","hamming"});
 args::ValueFlag<int> bound(attack_group,"integer", "Bound",{'b',"bound"});
+args::ValueFlag<int> hashlenght(attack_group,"integer", "Q",{'q',"lenght of hash"});
 args::ValueFlag<int> fragmentationSubsets(attack_group,"integer > 0", "Subsets of the set stored in memory",{'f',"fragmentation"});
 args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 // Manage arguments
@@ -368,17 +348,18 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		cout << H[i] << " ";
 	}cout<<endl;
 
-	int Q_int = 10;
-	char Q_bytes = Q_int;				//NEEDS PASSING THROUGH ARGS
-
+	// set Q hash lenght
+	char Q_bytes = args::get(hashlenght);
+	
 	cout<<"Bound : "<<b<<endl;
+	cout<<"Parameter Q : "<< (int)Q_bytes <<endl;
 	cout<<"Fragmentation : "<<fragmentation<<endl;
-
+	
 	
 //START DEBUGGING
     int* Q;
     Q = new int[r];
-    cout<<"Parameter Q : "<<Q_int <<endl;
+    
 
 	set_Q(r, Q);
 	Lambda(Q, H, r, L);
@@ -417,8 +398,13 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	
 	mpz_class n=list_size;
 	int found = 0;				
-	double begin = omp_get_wtime();
 	
+	#ifdef _OPENMP
+		double begin = omp_get_wtime();
+	#else
+		clock_t begin = clock();
+	#endif
+
 	int ite =0;
 //START THE TEST
 	int randfile = open("/dev/random", O_RDONLY);
@@ -455,7 +441,12 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		//SO WE NEED TO EXTRACT THESE NUMBERS AND CHECK IF THEY 
 		//ARE INDEED CARMICHAEL
 		
-		double total_time = omp_get_wtime();		//TOTAL TIMER
+		#ifdef _OPENMP
+			double total_time = omp_get_wtime();		//TOTAL TIMER
+		#else
+			double total_time = double(clock());		//TOTAL TIMER
+		#endif
+		
 		
 
 		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time,fragmentation, Q_bytes);
@@ -465,7 +456,12 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		if (found==1)
 			break;
 }
-	double end = omp_get_wtime();
+	
+	#ifdef _OPENMP
+		double end = omp_get_wtime();
+	#else
+		clock_t end = clock();
+	#endif
 
 	cout << endl;
 	if(found==0)
