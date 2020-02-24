@@ -211,14 +211,11 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, un
 	unsigned long long begin_ull = mpz_2_ull(begin);
 	unsigned long long end_ull = mpz_2_ull(end);
 	
+	
+	double func2_time_start = CLOCKTIME();
 	#ifdef _OPENMP
-		double func2_time_start = omp_get_wtime();
-	#else
-		double func2_time_start = double(clock());
+		#pragma omp parallel for
 	#endif
-
-	#pragma omp parallel
-	#pragma omp for
 	for (unsigned long long i=begin_ull;i<end_ull;i++){
 		mpz_class temp=func1(P,E[i],Lambda,c,flag,h1);
 		//cout <<"Unhashed value: " << temp << endl;
@@ -226,22 +223,22 @@ void func2(mpz_class* &P, int** E, mpz_class &Lambda, mpz_class &c, int flag, un
 		if (hash_flag==1)
 		{
 			std::pair<string, int*> mypair (to_md5_f6_str(temp, Q_bytes), E[i]);	//IMPLEMENTING HASH			
-			#pragma omp critical
+			#ifdef _OPENMP
+				#pragma omp critical
+			#endif
                         Map.insert(mypair);
 		}
 		else
 		{
 			std::pair<string, int*> mypair (temp.get_str(), E[i]);		//NON-HASH
-			#pragma omp critical
+			#ifdef _OPENMP
+				#pragma omp critical
+			#endif
                         Map.insert(mypair);
 		}				
 	}
 	
-	#ifdef _OPENMP
-		double func2_time_end = omp_get_wtime();
-	#else
-		double func2_time_end = double(clock());
-	#endif
+	double func2_time_end = CLOCKTIME();
 	
 	//cout << "Time for func2 is: " << func2_time_end - func2_time_start << " seconds" << endl;
 
@@ -369,9 +366,10 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
 					sol(sol1,sol2,itr->second,E, h1, h2); 
 			//cout << "RETURNED BEFORE FINISHING SIZE_E"<<endl;
 // critical here is because we do not want multiple threads to write the same time to file
-               			
-				#pragma omp critical
-                		{
+				#ifdef _OPENMP
+					#pragma omp critical
+				#endif
+				{
                  		ofstream myfile("carm_num.txt");
                     		myfile << f_count << " : [";
                     		for (unsigned long f=0;f<f_count;f++)
@@ -381,14 +379,13 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
                     		myfile.close();
        				delete[] factors;    	
                     		delete[] Q;
-						#ifdef _OPENMP
-							cout << "Total program time : " << omp_get_wtime() - total_time << endl;
-						#else
-							cout << "Total program time : " << double(clock()) - total_time << endl;
-						#endif
+							
+							cout << "Total program time : " <<  CLOCKTIME() - total_time << endl;
                    		 
                    		 cout << "Carmichael number stored now terminating... " << endl;
-                   		 exit(0);
+                   		 #ifdef _OPENMP
+							exit(0);
+						 #endif
                 		}
                		return 1;
 			}
@@ -522,17 +519,15 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 	else
 		cout << "Hash Implementation: False" << endl;
 	
-	
-	
+	double comb_time_start = CLOCKTIME();
 	#ifdef _OPENMP
-		double comb_time_start = omp_get_wtime();
-	#else
-		double comb_time_start = double(clock());
+		#pragma omp parallel for
 	#endif
-	#pragma omp parallel for
 	for (unsigned long i=0;i<sizeE1.get_ui();i++){
 		std::vector<int> cmb;	
-		#pragma omp critical
+		#ifdef _OPENMP
+			#pragma omp critical
+		#endif
 		cmb = c_obj1->next_combination();
 		int j=0;
 		for (std::vector<int>::iterator it = cmb.begin();it != cmb.end(); ++it)
@@ -541,12 +536,7 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 				j++;
 			}
 	}
-	
-	#ifdef _OPENMP
-		double comb_time_end = omp_get_wtime();
-	#else
-		double comb_time_end = double(clock());
-	#endif
+	double comb_time_end = CLOCKTIME();
 	//cout << "Combination time: " << comb_time_end-comb_time_start << " seconds" << endl;
 	delete c_obj1;
 	//cout << "Perms done ! " << endl;
@@ -581,16 +571,16 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 		Combinations* c_obj2;
         	c_obj2  =new Combinations(sizeI.get_ui(),h2);	
 		unsigned long long sizeE2_ull = mpz_2_ull(sizeE2);
+		double intersection_time_start = CLOCKTIME();
 		#ifdef _OPENMP
-			double intersection_time_start = omp_get_wtime();
-		#else
-			double intersection_time_start = double(clock());
+			#pragma omp parallel for
 		#endif
-		#pragma omp parallel for
 		for (unsigned long i=0;i<sizeE2_ull;i++){
 		    	//cout << "Entered intersection loop" << endl;
 			std::vector<int> cmb;
-			#pragma omp critical
+			#ifdef _OPENMP
+				#pragma omp critical
+			#endif	
             		cmb = c_obj2->next_combination();
            		int j=0;
 			int* temp_E = new int[h2];
@@ -601,15 +591,16 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
                         }
 			int inter=0;
 			inter = intersection(Q, r, P, sizeP, I, temp_E, Lambda, c, sizeE2, sizeI, U, count,sol1,sol2,h1,h2, total_time, hash_flag, Q_bytes);			
+			#ifndef _OPENMP
+				if(inter==1){
+					break;
+				}
+			#endif
 			delete[] temp_E;
-			
         	}
 		
-		#ifdef _OPENMP
-			double intersection_time_end = omp_get_wtime();
-		#else
-			double intersection_time_end = double(clock());
-		#endif
+		double intersection_time_end = CLOCKTIME();
+
 		cout << "Intersection time: " << intersection_time_end - intersection_time_start << " seconds" << endl;
 		U.clear();
 		delete c_obj2;

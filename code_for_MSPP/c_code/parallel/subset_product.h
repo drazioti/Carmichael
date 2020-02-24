@@ -23,6 +23,11 @@
 #include "Combinations.h"
 using namespace std;
 
+#ifdef _OPENMP
+    #define CLOCKTIME() omp_get_wtime()
+#else
+    #define CLOCKTIME() (clock()*1e-6)
+#endif
 
 //############################BASIC FUNCTIONS###########################
 

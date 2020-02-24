@@ -282,7 +282,6 @@ void density(int* Q, int* H, int size, int Psize, double &result1, double &densi
 //--------------------------------------------------------------//
 
 int main(int argc, char **argv){
-	clock_t startP, endP;
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
@@ -399,11 +398,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	mpz_class n=list_size;
 	int found = 0;				
 	
-	#ifdef _OPENMP
-		double begin = omp_get_wtime();
-	#else
-		clock_t begin = clock();
-	#endif
+	// double begin = CLOCKTIME();
 
 	int ite =0;
 //START THE TEST
@@ -441,13 +436,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		//SO WE NEED TO EXTRACT THESE NUMBERS AND CHECK IF THEY 
 		//ARE INDEED CARMICHAEL
 		
-		#ifdef _OPENMP
-			double total_time = omp_get_wtime();		//TOTAL TIMER
-		#else
-			double total_time = double(clock());		//TOTAL TIMER
-		#endif
-		
-		
+		double total_time = CLOCKTIME();
 
 		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time,fragmentation, Q_bytes);
 		delete[] I[0];
@@ -457,11 +446,9 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 			break;
 }
 	
-	#ifdef _OPENMP
-		double end = omp_get_wtime();
-	#else
-		clock_t end = clock();
-	#endif
+	// double end = CLOCKTIME();
+	// cout << begin - end<<endl;
+	
 
 	cout << endl;
 	if(found==0)

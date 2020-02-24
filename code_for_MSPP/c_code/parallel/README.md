@@ -25,15 +25,24 @@ $sudo make install
 ## Compile
 Makefile
 ```
-make all #results carmichael.out (serial) and carmicael_par.out(parallel)
-make serial # results carmichael.out (serial) and compiled files
-make parallel # carmicael_par.out(parallel) and compiled files
+make all
+#results carmichael.out (serial) and carmicael_par.out(parallel)
+
+make serial
+# results carmichael.out (serial) and compiled files
+
+make parallel
+# carmicael_par.out(parallel) and compiled files
 ...
 ```
 
 ## Run
 ```
-./a.out L --ham 15 -b 32 -f 1
+#run single core
+./carmicael.out L --ham 15 -b 32 -f 1 -q 10
+
+#run multycore
+./carmicael_par.out L --ham 15 -b 32 -f 1 -q 10
 ```
 
 Where      

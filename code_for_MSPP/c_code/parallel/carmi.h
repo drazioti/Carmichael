@@ -21,6 +21,8 @@
 #include "subset_product.h"
 using namespace std;
 
+
+
 //BASIC TEMPORARY UTILITY
 
 void from_list_to_array(std::list<unsigned char*> &source, unsigned char** &dest, int r);
