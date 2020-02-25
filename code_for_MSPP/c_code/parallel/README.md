@@ -23,13 +23,26 @@ $sudo make install
 ```
 
 ## Compile
+Makefile
 ```
-g++ --std=c++11 carmi.cpp Combinations.cpp -lgmpxx -lgmp -fopenmp -lcrypto
+make all
+#results carmichael.out (serial) and carmicael_par.out(parallel)
+
+make serial
+# results carmichael.out (serial) and compiled files
+
+make parallel
+# carmicael_par.out(parallel) and compiled files
+...
 ```
 
 ## Run
 ```
-./a.out L --ham 15 -b 32 -f 1
+#run single core
+./carmicael.out L --ham 15 -b 32 -f 1 -q 10
+
+#run multycore
+./carmicael_par.out L --ham 15 -b 32 -f 1 -q 10
 ```
 
 Where      
@@ -38,6 +51,8 @@ Where
 	   -b is the cardinality of the sets I_1 and I_2
 	   
 	   -f is the fragmentation parameter
+	   
+	   -q is the length of hash stored
 
 	  --ham is the local hamming weight (we choose h1,h2 such that h1+h2=ham)
 
@@ -45,7 +60,7 @@ Where
 
 E.g.
 ```
-./a.out 20 5 4 1 1 --ham 15 -b 32 -f 1
+./a.out 20 5 4 1 1 --ham 15 -b 32 -f 1 -q 10
 ```
 Note that you have to hard-code the parameter Q in the carmi.cpp, main().
 
@@ -55,8 +70,6 @@ First fork this repository. Make the changes you want (e.g. update some tables, 
 Contribute by using pull request to this repo. 
 
 ## TODO
-- make a make file
-- make an api
-- Insert parameter Q to args
+- add comments
 - Find a Carmichael number with many prime factors!
 

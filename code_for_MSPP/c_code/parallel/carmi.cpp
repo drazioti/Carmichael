@@ -1,27 +1,8 @@
 // $g++ --std=c++11 carmi.cpp Combinations.cpp -lgmpxx -lgmp -fopenmp -lcrypto
 // $nohup ./a.out > script.out 2>&1 &
-
-#include <fcntl.h>
-#include <unistd.h>
-#include <omp.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <gmpxx.h>
-#include "iostream"	
-#include <new>
-#include <math.h>
-#include <time.h>
-#include <signal.h>
-#include "subset_product.cpp"
-#include <list>
-#include <algorithm>
-#include <ctime>
-#include <fstream>
-#include <args.hxx>// argument lib args by Taywee
-using namespace std;
+#include "carmi.h"
 
 //BASIC TEMPORARY UTILITY
-
 
 void from_list_to_array(std::list<unsigned char*> &source, unsigned char** &dest, int r){
 	unsigned long j=0;
@@ -176,8 +157,6 @@ void make_P_set(int* Q, int* H,int r,mpz_class &Lambda, std::list<unsigned char*
 //THIS CODE ABOVE IS USED FOR THE OPTIMIZED VERSION OF STORING THE
 //THE P SET
 
-int is_carmichael(mpz_class &n, mpz_class* &factors, mpz_class &sizef);
-
 //FUNCTION(6): MAKE T_SET
 
 int T_set(int* Q, int r,unsigned char** &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mpz_class &sizeI,int local_hamming_weight, double total_time, int frag, char Q_bytes){
@@ -303,7 +282,8 @@ void density(int* Q, int* H, int size, int Psize, double &result1, double &densi
 //--------------------------------------------------------------//
 
 int main(int argc, char **argv){
-	clock_t startP, endP;
+	double total_time = CLOCKTIME();
+	cout<<"Setting up arguments"<< endl;
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
@@ -319,6 +299,7 @@ int main(int argc, char **argv){
 args::PositionalList<int> Harray(exponents_group,"integers","List of 'r' exponets");//{'e',"exponents"}
 args::ValueFlag<int> hammingWeight(attack_group,"integer", "Hamming weight",{"ham","hamming"});
 args::ValueFlag<int> bound(attack_group,"integer", "Bound",{'b',"bound"});
+args::ValueFlag<int> hashlenght(attack_group,"integer", "Q",{'q',"lenght of hash"});
 args::ValueFlag<int> fragmentationSubsets(attack_group,"integer > 0", "Subsets of the set stored in memory",{'f',"fragmentation"});
 args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 // Manage arguments
@@ -357,7 +338,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		H[i] =args::get(Harray)[i];
 		//cout << H[i] << ", ";
 	}
-	cout << endl;
+	// cout << endl;
 	
 	mpz_class b = args::get(bound); // bound example 32
 	int fragmentation = args::get(fragmentationSubsets); // frag vallue
@@ -368,17 +349,18 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		cout << H[i] << " ";
 	}cout<<endl;
 
-	int Q_int = 10;
-	char Q_bytes = Q_int;				//NEEDS PASSING THROUGH ARGS
-
+	// set Q hash lenght
+	char Q_bytes = args::get(hashlenght);
+	
 	cout<<"Bound : "<<b<<endl;
+	cout<<"Parameter Q : "<< (int)Q_bytes <<endl;
 	cout<<"Fragmentation : "<<fragmentation<<endl;
-
+	
 	
 //START DEBUGGING
     int* Q;
     Q = new int[r];
-    cout<<"Parameter Q : "<<Q_int <<endl;
+    
 
 	set_Q(r, Q);
 	Lambda(Q, H, r, L);
@@ -390,9 +372,9 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	make_P_set(Q,H,r,L,P);
 
 	int Psize = P.size();
-	cout << "hamming   : " << hamming << endl;
+	cout << "Hamming   : " << hamming << endl;
 	cout << "P size is : " << Psize << endl;
-	cout << "looking for Carmichael  numbers with " << Psize - hamming << " factors" << endl;
+	cout << endl <<"Looking for Carmichael numbers with " << Psize - hamming << " factors" << endl;
 	//printf("\n");
 //	mpz_class R=1;
 //	euler_totient(Q,H,r,R);
@@ -402,7 +384,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	double density_of_the_problem;
 	density(Q,H,r,Psize,euler_phi_log,density_of_the_problem);
 //    cout << "log_2 (euler_phi(Lambda) ) : " << fixed << euler_phi_log<< endl;
-    	cout << "density of the problem     : " << fixed << density_of_the_problem << endl;
+    	cout << "Density of the problem : " << fixed << density_of_the_problem << endl;
     	//printf("\n");
 //WHOLE TESTING
 	
@@ -417,8 +399,9 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	
 	mpz_class n=list_size;
 	int found = 0;				
-	double begin = omp_get_wtime();
 	
+	// double begin = CLOCKTIME();
+
 	int ite =0;
 //START THE TEST
 	int randfile = open("/dev/random", O_RDONLY);
@@ -455,9 +438,6 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		//SO WE NEED TO EXTRACT THESE NUMBERS AND CHECK IF THEY 
 		//ARE INDEED CARMICHAEL
 		
-		double total_time = omp_get_wtime();		//TOTAL TIMER
-		
-
 		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time,fragmentation, Q_bytes);
 		delete[] I[0];
 		delete[] I[1];
@@ -465,7 +445,10 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		if (found==1)
 			break;
 }
-	double end = omp_get_wtime();
+	
+	// double end = CLOCKTIME();
+	// cout << begin - end<<endl;
+	
 
 	cout << endl;
 	if(found==0)
