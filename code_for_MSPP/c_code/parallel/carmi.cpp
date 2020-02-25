@@ -282,6 +282,8 @@ void density(int* Q, int* H, int size, int Psize, double &result1, double &densi
 //--------------------------------------------------------------//
 
 int main(int argc, char **argv){
+	double total_time = CLOCKTIME();
+	cout<<"Setting up arguments"<< endl;
 	mpz_class L=1;
 	
 //-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
@@ -336,7 +338,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		H[i] =args::get(Harray)[i];
 		//cout << H[i] << ", ";
 	}
-	cout << endl;
+	// cout << endl;
 	
 	mpz_class b = args::get(bound); // bound example 32
 	int fragmentation = args::get(fragmentationSubsets); // frag vallue
@@ -370,9 +372,9 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	make_P_set(Q,H,r,L,P);
 
 	int Psize = P.size();
-	cout << "hamming   : " << hamming << endl;
+	cout << "Hamming   : " << hamming << endl;
 	cout << "P size is : " << Psize << endl;
-	cout << "looking for Carmichael  numbers with " << Psize - hamming << " factors" << endl;
+	cout << endl <<"Looking for Carmichael numbers with " << Psize - hamming << " factors" << endl;
 	//printf("\n");
 //	mpz_class R=1;
 //	euler_totient(Q,H,r,R);
@@ -382,7 +384,7 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	double density_of_the_problem;
 	density(Q,H,r,Psize,euler_phi_log,density_of_the_problem);
 //    cout << "log_2 (euler_phi(Lambda) ) : " << fixed << euler_phi_log<< endl;
-    	cout << "density of the problem     : " << fixed << density_of_the_problem << endl;
+    	cout << "Density of the problem : " << fixed << density_of_the_problem << endl;
     	//printf("\n");
 //WHOLE TESTING
 	
@@ -436,8 +438,6 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 		//SO WE NEED TO EXTRACT THESE NUMBERS AND CHECK IF THEY 
 		//ARE INDEED CARMICHAEL
 		
-		double total_time = CLOCKTIME();
-
 		found = T_set(Q,r,P2, n, L, I, b, hamming, total_time,fragmentation, Q_bytes);
 		delete[] I[0];
 		delete[] I[1];

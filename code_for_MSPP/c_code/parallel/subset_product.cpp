@@ -345,7 +345,7 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
                        			del_set[k+h1] = I[1][index];
                			}
 			
-               			cout << "Del set made " << endl;
+               			cout << "Variable del_set created" << endl;
                			std::sort(del_set, del_set + del_size);
                			int j=0;
                			mpz_class f_count=0;
@@ -360,7 +360,7 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
                 		}
 				delete[] del_set;
 				if(is_carmichael(number, factors, f_count) == 1){
-					cout << "!!!!!!!!FOUND INTERSECTION!!!!!!!!" <<  endl;
+					cout << endl << "Found intersection!" <<  endl;
 					//cout << "Temp and its hash: " << temp << " : " << to_md5_f6_str(temp, Q_bytes) << endl;
 					count++;
 					sol(sol1,sol2,itr->second,E, h1, h2); 
@@ -377,12 +377,10 @@ int intersection(int* &Q_s, int r, unsigned char** &P,mpz_class &sizeP, mpz_clas
                     		myfile <<"]";
                     		myfile <<"\n";
                     		myfile.close();
+							cout << "Carmichael number stored" << endl;
        				delete[] factors;    	
                     		delete[] Q;
-							
-							cout << "Total program time : " <<  CLOCKTIME() - total_time << endl;
-                   		 
-                   		 cout << "Carmichael number stored now terminating... " << endl;
+							cout << endl<< "Total program time : " <<  CLOCKTIME() - total_time << " seconds" << endl;
                    		 #ifdef _OPENMP
 							exit(0);
 						 #endif
@@ -541,7 +539,7 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 	delete c_obj1;
 	//cout << "Perms done ! " << endl;
 	unordered_multimap <string, int*> U;	
-	cout <<endl;
+	// cout <<endl;
 //	cout <<endl;
 //MAKING SLICED U1	
 	mpz_class bound;
