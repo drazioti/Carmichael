@@ -15,6 +15,7 @@ Applications of MSPP to cryptography see https://github.com/drazioti/NSK-birthda
 ## Requirements
 Linux/gcc/g++/make
 and gmp/OpenSSL/Openmp/args
+
 In Debian based systems, for gcc
 ```
 $sudo apt-get install build-essential
@@ -48,21 +49,21 @@ $make all
 $./carmichael.out 20 5 4 1 1 --ham 15 -b 32 -f 1 -q 10
 ```
 
-### run multycore
+### run multi core
 ```
 $./carmicael_par.out L --ham 15 -b 32 -f 1 -q 10
 ```
 Where,      
 ```
-	   -b is the cardinality of the sets I_1 and I_2
+	   L is written in the form a1 a2 ... ar where aj are the exponents for construction of Lambda (a1>=a2>=...>=ar)
+
+	   --ham is the local hamming weight (we choose h1,h2 such that h1+h2=ham)
+
+	   -b is the cardinality of the sets I_1 and I_2 (|I_1|=|I_2|=b)
 	   
 	   -f is the fragmentation parameter
 	   
 	   -q is the length of hash stored
-
-	  --ham is the local hamming weight (we choose h1,h2 such that h1+h2=ham)
-
-	    L is written in the form a1 a2 ... ar where aj are the expoents for construction Lambda
 ```
 
 ## Contribute
