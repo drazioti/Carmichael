@@ -43,12 +43,12 @@ $sudo make install
 $make all
 ```
 
-# run single core
+### run single core
 ```
 $./carmichael.out 20 5 4 1 1 --ham 15 -b 32 -f 1 -q 10
 ```
 
-# run multycore
+### run multycore
 ```
 $./carmicael_par.out L --ham 15 -b 32 -f 1 -q 10
 ```
