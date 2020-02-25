@@ -347,6 +347,10 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	cout << "H values : ";
 	for(int i=0;i<r;i++){
 		cout << H[i] << " ";
+		if ( i<r-1 && H[i]<H[i+1] ){
+			cout << endl << "H values were not valid.\nMake sure they meet requirements"<< endl << endl;
+			return 0;
+		}
 	}cout<<endl;
 
 	// set Q hash lenght
