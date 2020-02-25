@@ -36,34 +36,24 @@ For the library args :
 $git clone https://github.com/Taywee/args.git
 $cd args
 $sudo make install
-```cd ar
+```
 
 ## Compile
-Makefile
 ```
-make all
-#results carmichael.out (serial) and carmicael_par.out(parallel)
-
-make serial
-# results carmichael.out (serial) and compiled files
-
-make parallel
-# carmicael_par.out(parallel) and compiled files
-...
+$make all
 ```
 
-## Run
-```
 #run single core
-./carmicael.out L --ham 15 -b 32 -f 1 -q 10
+```
+./carmichael.out 20 5 4 1 1 --ham 15 -b 32 -f 1 -q 10
+```
 
 #run multycore
+```
 ./carmicael_par.out L --ham 15 -b 32 -f 1 -q 10
 ```
-
-Where      
-          
-
+Where,      
+```
 	   -b is the cardinality of the sets I_1 and I_2
 	   
 	   -f is the fragmentation parameter
@@ -73,12 +63,7 @@ Where
 	  --ham is the local hamming weight (we choose h1,h2 such that h1+h2=ham)
 
 	    L is written in the form a1 a2 ... ar where aj are the expoents for construction Lambda
-
-E.g.
 ```
-./a.out 20 5 4 1 1 --ham 15 -b 32 -f 1 -q 10
-```
-Note that you have to hard-code the parameter Q in the carmi.cpp, main().
 
 ## Contribute
 First fork this repository. Make the changes you want (e.g. update some tables, correct a bug to the code etc)
