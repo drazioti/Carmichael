@@ -25,13 +25,13 @@ all: clean
 	make parallel clean_obj
 	@echo "Build Carmichael executable"
 	
-serial: CFLAGS := -std=c++11 -c -O3 $(LIBS)
+serial: CFLAGS := -std=c++11 -c -O3 
 serial: $(OBJ_MAIN) $(OBJS_NO_MAIN)
-	$(CC) $(LIBS) $(OBJ_MAIN) $(OBJS_NO_MAIN) -o $(EXECUTABLE_MAIN)
+	$(CC) $(LIBS) $(OBJ_MAIN) $(OBJS_NO_MAIN) -o $(EXECUTABLE_MAIN) $(LIBS)
 
-parallel: CFLAGS := -std=c++11 -c -O3 $(LIBS) $(LIBS_PAR)
+parallel: CFLAGS := -std=c++11 -c -O3 
 parallel: $(OBJ_MAIN) $(OBJS_NO_MAIN)
-	$(CC) $(LIBS) $(LIBS_PAR) $(OBJ_MAIN) $(OBJS_NO_MAIN) -o $(EXECUTABLE_MAIN_PAR)
+	$(CC) $(LIBS) $(LIBS_PAR) $(OBJ_MAIN) $(OBJS_NO_MAIN) -o $(EXECUTABLE_MAIN_PAR) $(LIBS) $(LIBS_PAR)
 
 prepare: $(OBJ_MAIN) $(OBJS_NO_MAIN)
 
