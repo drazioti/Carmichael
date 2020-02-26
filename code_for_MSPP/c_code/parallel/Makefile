@@ -3,6 +3,7 @@ CC =  g++
 #LIBS used from the compiler.
 LIBS =  -lgmpxx -lgmp -lcrypto
 LIBS_PAR =  -fopenmp
+ALL_LIBS =
 #CFLAGS passed to the compiler.
 #-fomit-frame-pointer flag does not help much
 CFLAGS =  -std=c++11 -c -O3
@@ -25,30 +26,30 @@ all: clean
 	make parallel clean_obj
 	@echo "Build Carmichael executable"
 	
-serial: CFLAGS := -std=c++11 -c -O3 $(LIBS)
+serial: ALL_LIBS := $(LIBS)
 serial: $(OBJ_MAIN) $(OBJS_NO_MAIN)
-	$(CC) $(LIBS) $(OBJ_MAIN) $(OBJS_NO_MAIN) -o $(EXECUTABLE_MAIN)
+	$(CC) $(OBJ_MAIN) $(OBJS_NO_MAIN) -o $(EXECUTABLE_MAIN) $(ALL_LIBS)
 
-parallel: CFLAGS := -std=c++11 -c -O3 $(LIBS) $(LIBS_PAR)
+parallel: ALL_LIBS := $(LIBS) $(LIBS_PAR)
 parallel: $(OBJ_MAIN) $(OBJS_NO_MAIN)
-	$(CC) $(LIBS) $(LIBS_PAR) $(OBJ_MAIN) $(OBJS_NO_MAIN) -o $(EXECUTABLE_MAIN_PAR)
+	$(CC) $(OBJ_MAIN) $(OBJS_NO_MAIN) -o $(EXECUTABLE_MAIN_PAR)  $(ALL_LIBS)
 
 prepare: $(OBJ_MAIN) $(OBJS_NO_MAIN)
 
 carmi.o:  carmi.cpp
-	$(CC) $(CFLAGS) carmi.cpp
+	$(CC) $(CFLAGS) carmi.cpp $(ALL_LIBS)
 
 subset_product.o:  subset_product.cpp
-	$(CC) $(CFLAGS) subset_product.cpp
+	$(CC) $(CFLAGS) subset_product.cpp  $(ALL_LIBS)
 
 Combinations.o:  Combinations.cpp
-	$(CC) $(CFLAGS) Combinations.cpp
+	$(CC) $(CFLAGS) Combinations.cpp $(ALL_LIBS)
 
 clean: clean_obj
 	rm -f $(EXECUTABLE_MAIN)
 	rm -f $(EXECUTABLE_MAIN_PAR)
-	@echo "Cleanned dir of executables"
+	@echo "Cleanned executables"
 
 clean_obj:
 	rm -f *.o
-	@echo "Cleanned dir of objs"
+	@echo "Cleanned objs"
