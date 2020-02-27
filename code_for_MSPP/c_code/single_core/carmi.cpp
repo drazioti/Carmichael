@@ -10,13 +10,15 @@
 #include "iostream"	
 #include <new>
 #include <math.h>
-#include <time.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <signal.h>
 #include "subset_product.cpp"
 #include <list>
 #include <algorithm>
 #include <ctime>
 #include <fstream>
+#include <args.hxx>
 using namespace std;
 
 //BASIC TEMPORARY UTILITY
@@ -155,7 +157,7 @@ int is_carmichael(mpz_class &n, mpz_class* &factors, mpz_class &sizef);
 
 //FUNCTION(6): MAKE T_SET
 
-  int T_set(mpz_class* &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mpz_class &sizeI,int local_hamming_weight, int frag){
+  int T_set(mpz_class* &P, mpz_class &sizeP, mpz_class &Lambda, mpz_class** &I, mpz_class &sizeI,int local_hamming_weight,double total_time, int frag, char Q_bytes){
 	mpz_class b=1;
 	for (mpz_class i=0;i<sizeP;i++)
 	{
@@ -166,7 +168,7 @@ int is_carmichael(mpz_class &n, mpz_class* &factors, mpz_class &sizef);
 	std::list<int*> sol1;
 	std::list<int*> sol2;
     
-	product_attack_1(P,sizeP,Lambda, b, I, local_hamming_weight,sizeI, sol1, sol2, count,frag);
+	product_attack_1(P,sizeP,Lambda, b, I, local_hamming_weight,sizeI, sol1, sol2, count,frag, total_time, Q_bytes);
 	
 	cout << "T set product attack finished " << endl;	
 	if(sol1.begin() != sol1.end() && sol2.begin() != sol2.end())
@@ -277,126 +279,182 @@ void density(int* Q, int* H, int size, int Psize, double &result1, double &densi
 
 //--------------------------------------------------------------//
 
-int main(){
-	clock_t startP, endP;
-	mpz_class L=1;
-	
-//-----CHANGE THESE PARAMETERS TO RUN a new instance-------//	
-  	int frag=1;	
-  	int r = 8;		    //number of first primes
-	int hamming = 8;  	//the hamming weight	
-	mpz_class b = 40;    //the bound
-	int H[r];
+int main(int argc, char **argv){
+        //double total_time = CLOCKTIME();
+        cout<<"Setting up arguments"<< endl;
+        mpz_class L=1;
 
-	//INITIALIZING exponents H TO ONES. Which is the default value.
-	
-	for (int i=0;i<r;i++){
-		H[i] =1;
-	}
+//-----CHANGE THESE PARAMETERS TO RUN a new instance-------//   
 
-   	H[0]=10;
-	H[1]=8;
-	H[2]=8;
-	H[3]=1;
-	H[4]=1;
-	H[5]=1;
-	H[6]=1;
-	H[7]=5;
+        //declare Argument Parser
+    args::ArgumentParser parser("This is an implementation of a propability attack\n to the Subsect Product Problem for the generation of Carmichael numbers.", "Make sure to place arguments right.");
+    args::Group exponents_group(parser, "Exponents", args::Group::Validators::All);
+        args::Group attack_group(parser, "Attack Values", args::Group::Validators::All);
+    args::Group help_group(parser, "Help:", args::Group::Validators::DontCare);
+
 //-----------------------------------------//
+// args::ValueFlag<int> frag(exponents_group,"integer > 0", "Number of first primes",{'r',"firstprimes"});
+args::PositionalList<int> Harray(exponents_group,"integers","List of 'r' exponets");//{'e',"exponents"}
+args::ValueFlag<int> hammingWeight(attack_group,"integer", "Hamming weight",{"ham","hamming"});
+args::ValueFlag<int> bound(attack_group,"integer", "Bound",{'b',"bound"});
+args::ValueFlag<int> hashlenght(attack_group,"integer", "Q",{'q',"lenght of hash"});
+args::ValueFlag<int> fragmentationSubsets(attack_group,"integer > 0", "Subsets of the set stored in memory",{'f',"fragmentation"});
+args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
+// Manage arguments
+    try
+    {
+        parser.ParseCLI(argc, argv);
+    }
+    catch (const args::Completion& e)
+    {
+        std::cout << e.what();
+        return 0;
+    }
+    catch (const args::Help&)
+    {
+        std::cout << parser;
+        return 0;
+    }
+    catch (const args::ParseError& e)
+    {
+        std::cerr << e.what() << std::endl;
+        std::cerr << parser;
+        return 1;
+    }
+    catch (args::ValidationError e)
+    {
+        std::cerr << e.what() << std::endl;
+        std::cerr << parser;
+        return 1;
+    }
+// SETTING VARS FROM ARGS
+        int r = args::get(Harray).size(); // exponent array size example 5
+        int H[r]; // exponent array example 20 5 4 1 1
+        //cout << " EXPONENTS: ";
+        for (int i=0;i<r;i++){
+                H[i] =args::get(Harray)[i];
+                //cout << H[i] << ", ";
+        }
+        // cout << endl;
 
+        mpz_class b = args::get(bound); // bound example 32
+        int fragmentation = args::get(fragmentationSubsets); // frag vallue
+        int hamming = args::get(hammingWeight); // hamming example 15
+
+        cout << "H values : ";
+        for(int i=0;i<r;i++){
+                cout << H[i] << " ";
+                if ( i<r-1 && H[i]<H[i+1] ){
+                        cout << endl << "H values were not valid.\nMake sure they meet requirements"<< endl << endl;
+                        return 0;
+                }
+        }cout<<endl;
+
+        // set Q hash lenght
+        char Q_bytes = args::get(hashlenght);
+
+        cout<<"Bound : "<<b<<endl;
+        cout<<"Parameter Q : "<< (int)Q_bytes <<endl;
+        cout<<"Fragmentation : "<<fragmentation<<endl;
 //START DEBUGGING
-
-	int* Q;
+    int* Q;
     Q = new int[r];
-	//cout << "1) STARTED RUNNING" << endl; 		    //DEBUG POINT (1)
-	set_Q(r, Q);
-	//cout << "Q set done" << endl;					//DEBUG POINT(2)
-	Lambda(Q, H, r, L);
-	//cout << "Lambda done" << endl;
-	cout << "Lambda is : " << L << endl; 
-	startP = clock();
-    
+
+
+        set_Q(r, Q);
+        Lambda(Q, H, r, L);
+        cout << "Lambda is : " << L << endl;
+
     //Here we print some basic things we need to know
 
-	std::list<mpz_class> P;
-	make_P_set(Q,H,r,L,P);
-	endP = clock();
-	int Psize = P.size();
-	cout << "hamming   : " << hamming << endl;
-	cout << "P size is : " << Psize << endl;
-	cout << "looking for Carmichaels with " << Psize - hamming << " factors" << endl;
-	printf("\n");
-//	mpz_class R=1;
-//	euler_totient(Q,H,r,R);
-//	cout << "euler_phi of Lambda is     : " << R << endl;
+        std::list<mpz_class> P;
+        make_P_set(Q,H,r,L,P);
 
-    double euler_phi_log;
-    double density_of_the_problem;
-    density(Q,H,r,Psize,euler_phi_log,density_of_the_problem);
+        int Psize = P.size();
+        cout << "Hamming   : " << hamming << endl;
+        cout << "P size is : " << Psize << endl;
+        cout << endl <<"Looking for Carmichael numbers with " << Psize - hamming << " factors" << endl;
+        //printf("\n");
+//      mpz_class R=1;
+//      euler_totient(Q,H,r,R);
+//      cout << "euler_phi of Lambda is     : " << R << endl;
+
+        double euler_phi_log;
+        double density_of_the_problem;
+        density(Q,H,r,Psize,euler_phi_log,density_of_the_problem);
 //    cout << "log_2 (euler_phi(Lambda) ) : " << fixed << euler_phi_log<< endl;
-    cout << "density of the problem     : " << fixed << density_of_the_problem << endl;
-    printf("\n");
+        cout << "Density of the problem : " << fixed << density_of_the_problem << endl;
+        //printf("\n");
 //WHOLE TESTING
-	
-	unsigned long list_size = P.size();
-	mpz_class* P2;
-	P2 = new mpz_class[list_size];
-	from_list_to_array(P, P2);
+        unsigned long list_size = P.size();
+        mpz_class* P2;
+        P2 = new mpz_class[list_size];
+        from_list_to_array(P, P2);
 
 //GENERATING I set
-	
-	mpz_class n=list_size;
-	int found = 0;				
-	clock_t begin = clock();
-	
-	int randfile = open("/dev/random", O_RDONLY);
-	unsigned int seed;
-	if (randfile>0)
-	{
-		size_t check = read(randfile, &seed, sizeof(seed));
-		cout << "seed is : "<< seed << endl;
-		cout << endl;
-	}
-	else 
-	{
-		cout << "Failed to open /dev/random" << endl;
-		exit(0);
-	}
 
-	gmp_randclass rr(gmp_randinit_mt);
-        randomize_I(rr, seed);
-	close(randfile);
+        mpz_class n=list_size;
+        int found = 0;
+
+        double total_time = omp_get_wtime();
+
+        int ite =0;
 //START THE TEST
-	while(found==0){
-//	for(int ite=0;ite<100;ite++){ 		
-		mpz_class** I;			
-		I = new mpz_class*[2];		//RESULTS
-		I[0] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
-		I[1] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
-		gen_I(n,b,1, I,rr,seed);
-		//cout << "I1[0] : " << I[0][0] << endl;
-		mpz_class count =0;		//THIS IS A COUNTER FOR HOW MANY INTERSECTIONS WE GET
+        int randfile = open("/dev/random", O_RDONLY);
+        unsigned int seed = 12345;  //fixed for no randomized option
+        char ran=0;
+	if (randfile>0)
+       	{
+		if (ran==1)
+               		size_t check = read(randfile, &seed, sizeof(seed));
+                //cout << "seed is: " << seed << endl;
+                //cout << endl;
+        }
+        else
+        {       cout << "Failed to open /dev/random" << endl;
+                	exit(0);
+       	}
+        gmp_randclass rr(gmp_randinit_mt);
+        randomize_I(rr,seed);                   //RANDOMIZE ONCE
+        close(randfile);
+        while(found==0){
+//      for(int ite=0;ite<100;ite++){
 
-		//AT THIS STAGE WE HAVE THE COMBINATIONS IN SOL1, SOL2 THAT 
-		//PRODUCE THE CARMICHAEL NUMBERS
-		//SO WE NEED TO EXTRACT THESE NUMBERS AND CHECK IF THEY 
-		//ARE INDEED CARMICHAEL
-		found = T_set(P2, n, L, I, b, hamming,frag);
-	  delete[] I[0];
-		delete[] I[1];
-		delete[] I;
-		if (found==1)
-			break;
+//CHOOSING RANDOM I
+                mpz_class** I;
+                I = new mpz_class*[2];          //RESULTS
+
+                I[0] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
+                I[1] = new mpz_class[mpz_get_ui(b.get_mpz_t())];
+
+                gen_I(n,b,1, I, rr,seed);
+                mpz_class count =0;             //THIS IS A COUNTER FOR HOW MANY INTERSECTIONS WE GET
+//I CHECKS
+
+                //AT THIS STAGE WE HAVE THE COMBINATIONS IN SOL1, SOL2 THAT
+                //PRODUCE THE CARMICHAEL NUMBERS
+                //SO WE NEED TO EXTRACT THESE NUMBERS AND CHECK IF THEY
+                //ARE INDEED CARMICHAEL
+
+                found = T_set(P2, n, L, I, b, hamming,total_time, fragmentation, Q_bytes);
+                delete[] I[0];
+                delete[] I[1];
+                delete[] I;
+                if (found==1)
+                        break;
 }
-	clock_t end = clock();
-//	cout << "Time elapsed (sec): " << double(end - begin)/CLOCKS_PER_SEC << endl;
-	cout << "Time elapsed (min): " << double(end - begin)/(60*CLOCKS_PER_SEC) << endl;
-	cout << "Time elapsed (hours): " << double(end - begin)/(3600*CLOCKS_PER_SEC) << endl;
-	cout << endl;
-	if(found==0)
-		cout << "The algorithm did ALL The ITERATIONS WITHOUT any SUCCESS" << endl;	
-	delete[] Q;
-	delete[] P2;	
-	return 0;	
+
+        // double end = CLOCKTIME();
+        // cout << begin - end<<endl;
+
+
+        cout << endl;
+        if(found==0)
+  cout << "The algorithm did ALL The ITERATIONS WITHOUT any SUCCESS" << endl;
+        delete[] Q;
+        delete[] P2;
+        return 0;
 }
+
+
 
