@@ -512,7 +512,7 @@ int product_attack_1(int* &Q, int r, unsigned char** &P,mpz_class &sizeP, mpz_cl
 	if ((Lambda.get_str().length())>Q_bytes)
 	{
 		hash_flag =1;
-		//cout << "Hash Implementation: True" << endl;
+		cout << "Hash Implementation: True" << endl;
 	}
 	else
 		cout << "Hash Implementation: False" << endl;
