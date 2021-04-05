@@ -409,10 +409,12 @@ args::HelpFlag help(help_group, "Help", "Display help menu", {'h', "help"});
 	int ite =0;
 //START THE TEST
 	int randfile = open("/dev/random", O_RDONLY);
-	unsigned int seed;
+	unsigned int seed = 12345;		//fixed for no randomization option
+	char ran=0;
 	if (randfile>0)
 	{
-		size_t check = read(randfile, &seed, sizeof(seed));
+		if (ran==1)
+			size_t check = read(randfile, &seed, sizeof(seed));
 		//cout << "seed is: " << seed << endl;
 		//cout << endl;
 	}
