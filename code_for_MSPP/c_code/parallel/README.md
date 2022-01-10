@@ -8,7 +8,7 @@ Initial Author 						  : E. Tiganourias (etiganou@csd.auth.gr)
 
 Refactoring (openmp,exponents,args)    : V. Martidis    (vamartid@yandex.com)
 
-We apply this problem to find Carmichael numbers by usinng Erdos algorithm.
+We apply this problem to find Carmichael numbers by using Erdos algorithm.
 
 Applications of MSPP to cryptography see https://github.com/drazioti/NSK-birthday-attack
 
@@ -51,7 +51,7 @@ $./carmichael.out 20 5 4 1 1 --ham 15 -b 32 -f 1 -q 10
 
 ### run multi core
 ```
-$./carmicael_par.out L --ham 15 -b 32 -f 1 -q 10
+$./carmichael_par.out L --ham 15 -b 32 -f 1 -q 10
 ```
 Where,      
 ```
