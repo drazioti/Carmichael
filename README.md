@@ -6,10 +6,10 @@
 
 In this repository we provide some code for solving Modular Subset Product Problem.
 
-We apply this problem to find Carmichael numbers by using Erdos algorithm (which uses MSPP).
+We apply this problem to find Carmichael numbers by using Erdos algorithm (which uses MSPP), see section 3 of [paper](https://arxiv.org/abs/2002.07095).
+
 
 Applications of MSPP to cryptography see [here](https://github.com/drazioti/NSK-birthday-attack)
-Also take a look to our [paper](https://arxiv.org/abs/2002.07095).
 
 ## The code
 We provide Sagemath code, which we used to build all the (small instances) tables.
