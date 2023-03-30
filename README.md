@@ -9,7 +9,7 @@ We apply this problem to find Carmichael numbers by using Erdos algorithm (which
 Applications of MSPP to cryptography see [here](https://github.com/drazioti/NSK-birthday-attack)<br>
 Published as:<br>
 *Product Subset Problem : Applications to number theory and cryptography, <br> 
-Book Chapter, Analysis, Cryptography and Information Science, Chapter 5, Vol. 10, World Scientific, 2023,<br>
+Book Chapter, Analysis, Cryptography and Information Science, Chapter 5, Vol. 10, World Scientific, 2023,
 Joint work with V. Martidis and S. Tiganourias.*
 
 ## The code
