@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <inttypes.h>
+#include <omp.h>
 using namespace std;
 
 

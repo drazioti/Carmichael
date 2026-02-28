@@ -19,6 +19,7 @@
 #include <ctime>
 #include <fstream>
 #include <args.hxx>
+#include "Combinations.cpp"   // whatever the real filename is
 using namespace std;
 
 //BASIC TEMPORARY UTILITY

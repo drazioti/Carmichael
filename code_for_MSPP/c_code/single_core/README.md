@@ -15,7 +15,7 @@ Linux/GMP/OpenSSL
 
 ## Compile
 ```
-g++ carmi.cpp Combinations.cpp -lgmpxx -lgmp -lcrypto
+g++ -O2 -std=c++17 -fopenmp carmi.cpp -o carmi -lcrypto -lgmp -lgmpxx
 ```
 
 ## Contribute
